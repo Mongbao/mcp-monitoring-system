@@ -1,247 +1,396 @@
-# 🖥️ MCP 監控系統
+# MCP 監控系統
 
-[![CI](https://github.com/Mongbao/mcp-monitoring-system/workflows/CI/badge.svg)](https://github.com/Mongbao/mcp-monitoring-system/actions)
-[![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![GitHub issues](https://img.shields.io/github/issues/Mongbao/mcp-monitoring-system)](https://github.com/Mongbao/mcp-monitoring-system/issues)
-[![GitHub stars](https://img.shields.io/github/stars/Mongbao/mcp-monitoring-system)](https://github.com/Mongbao/mcp-monitoring-system/stargazers)
+一個基於 FastAPI 的現代化系統監控解決方案，整合 Discord 通知和智能排程功能，提供全面的系統資源監控、進程管理、網路監控等功能。
 
-一個基於 Model Context Protocol (MCP) 的監控平台，整合了 **Web 儀表板** 和 **Discord 通知** 功能。
+## 🌟 功能特點
 
-## ✨ 主要特色
+- 🖥️ **系統監控**: CPU、記憶體、磁碟使用率即時監控
+- 📊 **進程管理**: 進程列表、資源使用情況、進程控制
+- 🌐 **網路監控**: 網路連接狀態、流量統計、端口監控
+- 📝 **日誌監控**: 系統日誌收集、分析和告警
+- 🔧 **服務管理**: 系統服務狀態監控和控制
+- 📈 **歷史數據**: 系統指標歷史記錄和趨勢分析
+- 🎯 **智能告警**: 可自定義的告警規則和通知
+- 🌓 **Web 儀表板**: 現代化的響應式 Web 界面
+- 🌙 **深色模式**: 支援明亮/深色主題切換
+- 🤖 **Discord 整合**: Discord 機器人通知和報告
+- 📅 **智能排程**: 自動化報告排程系統
 
-- 🔄 **即時系統監控** - CPU、記憶體、磁碟、網路狀態
-- 📊 **Web 儀表板** - 響應式設計，支援桌面和行動裝置
-- 🤖 **Discord 整合** - 自動通知和互動式查詢
-- ⚙️ **進程監控** - 詳細的進程資源使用分析
-- 📁 **檔案系統監控** - 磁碟使用率和 I/O 監控
-- 🌐 **網路監控** - 流量統計和連線狀態
-- 📋 **日誌分析** - 系統日誌自動分析和警報
+## 🏗️ 系統架構
 
-## 📁 專案結構
+該系統採用現代化 FastAPI 架構，包含以下核心組件：
 
-```
-mcp-monitoring-system/
-├── README.md                    # 專案說明
-├── requirements.txt             # Python 依賴套件
-├── .env.example                 # 環境變數範例
-├── mcp_servers/                 # MCP 監控 servers
-│   ├── mcp_system_monitor.py    # 系統監控 MCP server
-│   ├── mcp_filesystem_monitor.py # 檔案系統監控
-│   ├── mcp_network_monitor.py   # 網路監控
-│   ├── mcp_log_analyzer.py      # 日誌分析
-│   └── mcp_process_monitor.py   # 進程監控
-├── web_dashboard/               # Web 儀表板
-│   ├── mcp_web_server_optimized.py # Web 儀表板服務 (優化版)
-│   ├── optimize_frontend.py     # 前端資源優化工具
-│   └── static/                  # 靜態資源檔案
-├── discord_integration/         # Discord 整合
-│   ├── mcp_discord_system_monitor.py # Discord 監控主程式
-│   ├── start_discord_monitor.sh # Discord 監控啟動腳本
-│   └── test_discord_simple_api.sh # Discord API 測試
-├── config/                      # 配置檔案
-│   ├── mcp-web.service         # Web 服務 systemd 配置
-│   └── mcp-discord-monitor.service # Discord 監控服務配置
-├── scripts/                     # 部署與測試腳本
-│   ├── deploy_apache.sh        # Apache 部署腳本
-│   └── test_mcp_servers.sh     # MCP servers 測試
-├── docs/                        # 文檔
-│   ├── DISCORD_INTEGRATION_COMPLETE.md # Discord 整合指南
-│   ├── DISCORD_SETUP_GUIDE.md  # Discord 設定指南
-│   └── TOKEN_SECURITY_GUIDE.md # 安全設定指南
-└── logs/                        # 日誌檔案
-    └── discord_monitor.log      # Discord 監控日誌
-├── docs/                        # 文件
-│   ├── DEPLOYMENT_GUIDE.md     # 部署指南
-│   ├── DISCORD_INTEGRATION_COMPLETE.md # Discord 整合完成說明
-│   ├── DISCORD_SETUP_GUIDE.md  # Discord 設定指南
-│   └── SETUP_COMPLETE.md       # 設定完成說明
-└── logs/                        # 日誌檔案
-    └── discord_monitor.log      # Discord 監控日誌
-```
+### FastAPI 應用程式
+- `app/main.py` - 主應用程式入口
+- `app/api/routes/` - API 路由模組
+- `app/core/` - 核心業務邏輯
+- `app/config.py` - 配置管理
 
-**環境變數：**
-- `WATCH_PATHS` - 要監控的路徑，以逗號分隔 (預設: `/home,/var/log`)
+### 核心監控模組
+- `app/core/monitors/base.py` - 基礎監控類別
+- `app/core/monitors/discord.py` - Discord 監控整合
+- `app/core/scheduler.py` - 智能排程管理器
 
-### 3. 網路監控 (mcp_network_monitor.py)
-監控網路連線、介面狀態和流量。
+### Web 儀表板
+- `app/static/templates/dashboard.html` - 現代化 Web 監控界面
+- 響應式設計，支援桌面和移動設備
+- 即時數據更新和互動式圖表
+- 深色/明亮主題切換
 
-**資源：**
-- `network://interfaces` - 網路介面狀態
-- `network://connections` - 當前網路連線
-- `network://traffic` - 網路流量統計
+### Discord 整合
+- `discord_integration/` - Discord 機器人整合
+- 自動化系統報告
+- 即時通知和警報
 
-**工具：**
-- `ping_host` - Ping 主機測試連通性
-- `port_scan` - 掃描主機開放的埠
-- `get_routing_table` - 獲取路由表
+## 🚀 安裝指南
 
-**環境變數：**
-- `MONITOR_INTERFACES` - 要監控的網路介面，以逗號分隔 (預設: `eth0,wlan0`)
+### 系統需求
 
-### 4. 日誌分析 (mcp_log_analyzer.py)
-分析系統日誌檔案，檢測錯誤和異常。
+- Python 3.10+
+- Linux/macOS/Windows
+- 8GB+ RAM 推薦
+- 1GB+ 可用磁碟空間
 
-**資源：**
-- `log://[日誌檔案路徑]` - 分析指定日誌檔案
+### 快速開始
 
-**工具：**
-- `search_logs` - 在日誌中搜尋特定模式
-- `analyze_error_trends` - 分析錯誤趨勢
-- `get_log_stats` - 獲取日誌統計資訊
-
-**環境變數：**
-- `LOG_PATHS` - 要分析的日誌檔案路徑，以逗號分隔 (預設: `/var/log/syslog,/var/log/auth.log`)
-
-### 5. 進程監控 (mcp_process_monitor.py)
-監控系統進程和服務狀態。
-
-**資源：**
-- `process://all` - 所有進程概覽
-- `process://monitored` - 監控進程狀態
-- `process://top` - CPU/記憶體使用率最高的進程
-
-**工具：**
-- `get_process_details` - 獲取進程詳細資訊
-- `kill_process` - 終止進程
-- `monitor_process_tree` - 監控進程樹
-- `check_service_health` - 檢查服務健康狀態
-
-**環境變數：**
-- `MONITOR_PROCESSES` - 要監控的進程名稱，以逗號分隔 (預設: `apache2,nginx,mysql`)
-
-## Web 儀表板
-
-### MCP 監控系統 Web 伺服器 ⚡
-高性能監控儀表板，提供完整的系統監控功能：
-
+1. **克隆儲存庫**
 ```bash
-# 使用腳本啟動 (推薦)
-./scripts/start_optimized_web.sh [port]
-
-# 或直接執行  
-python3 web_dashboard/mcp_web_server_optimized.py [port]
+git clone https://github.com/Mongbao/mcp-monitoring-system.git
+cd mcp-monitoring-system
 ```
 
-預設端口：8003  
-瀏覽器開啟：http://localhost:8003
-
-**功能特色：**
-- 🎯 **虛擬滾動技術** - 處理數千筆數據無延遲
-- 📈 **懶載入圖表** - 按需載入視覺化組件  
-- 🗜️ **Gzip 壓縮** - 減少網路傳輸大小
-- 📱 **響應式優化** - 完美支援行動裝置
-- ⚡ **靜態資源優化** - 快速載入體驗
-
-## MCP 伺服器
-
-MCP server 配置檔案位於 `.vscode/mcp.json`，您可以直接在 VS Code 中使用這些 server。
-
-## 使用方法
-
-### 在 VS Code 中使用
-
-MCP server 配置檔案位於 `.vscode/mcp.json`，您可以直接在 VS Code 中使用這些 server。
-
-### 直接執行測試
-
+2. **建立虛擬環境**
 ```bash
-# 執行測試腳本
-./test_mcp_servers.sh
-
-# 或者手動測試單個 server
-source mcp_env/bin/activate
-python -m mcp_system_monitor
+python -m venv mcp_env
+source mcp_env/bin/activate  # Linux/macOS
+# 或 Windows: mcp_env\Scripts\activate
 ```
 
-## 配置檔案
-
-### .vscode/mcp.json
-包含所有 MCP server 的配置，每個 server 都有自己的環境變數設定。
-
-### requirements.txt
-列出所有必需的 Python 套件。
-
-## 安全注意事項
-
-1. 某些功能需要 root 權限 (如終止其他使用者的進程)
-2. 檔案系統監控可能會存取敏感目錄
-3. 網路監控功能可能需要特殊權限
-4. 建議在受控環境中使用
-
-## 故障排除
-
-### 權限錯誤
-如果遇到權限錯誤，請確保：
-- 使用者有足夠權限存取監控的檔案/目錄
-- 對於系統日誌，可能需要將使用者加入相關群組
-
-### 套件缺失
-確保已安裝所有相依套件：
+3. **安裝依賴**
 ```bash
 pip install -r requirements.txt
 ```
 
-### 網路功能問題
-某些網路監控功能可能需要：
-- `ping` 命令可用
-- `ip` 命令可用 (iproute2 套件)
+4. **配置環境變數**
+```bash
+cp .env.example .env
+# 編輯 .env 檔案設定必要參數
+```
 
-## 自訂擴展
+環境變數說明：
+```bash
+# Discord 設定
+DISCORD_BOT_TOKEN=your_bot_token_here
+DISCORD_CHANNEL_ID=your_channel_id_here
 
-您可以透過以下方式擴展系統：
+# 應用程式設定
+HOST=0.0.0.0
+PORT=8000
+DEBUG=true
+```
 
-1. 修改環境變數來調整監控範圍
-2. 在各個 server 中添加新的資源或工具
-3. 建立新的 MCP server 來監控其他面向
+5. **啟動服務**
+```bash
+# 啟動 FastAPI 應用程式
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
-## Apache 部署 (生產環境)
+# 或使用 Python 直接啟動
+python app/main.py
+```
 
-### 快速部署
-系統設定為在 **Port 8003** 上運行：
+6. **訪問 Web 界面**
+```
+打開瀏覽器訪問: http://localhost:8000
+```
+
+## 📖 使用說明
+
+### Web 儀表板
+
+Web 儀表板提供直觀的監控界面：
+
+- **系統概覽**: 顯示 CPU、記憶體、磁碟使用率
+- **進程管理**: 檢視和管理系統進程
+- **網路監控**: 監控網路連接和流量
+- **日誌查看**: 檢視系統日誌和告警
+- **服務狀態**: 監控系統服務狀態
+- **檔案系統**: 監控磁碟使用情況
+- **Discord 監控**: Discord 機器人狀態和控制
+- **排程管理**: 自動化報告排程設定
+
+### Discord 整合
+
+系統支援 Discord 機器人整合：
+
+1. **設定 Discord 機器人**
+   - 在 Discord 開發者門戶建立機器人
+   - 獲取機器人 Token
+   - 邀請機器人到您的伺服器
+
+2. **配置環境變數**
+   ```bash
+   DISCORD_BOT_TOKEN=your_bot_token_here
+   DISCORD_CHANNEL_ID=your_channel_id_here
+   ```
+
+3. **使用功能**
+   - 手動發送系統報告
+   - 發送自定義訊息
+   - 設定自動化排程報告
+
+### 排程功能
+
+支援多種排程類型：
+
+- **每日排程**: 每天固定時間發送報告
+- **每週排程**: 每週特定日期發送報告
+- **每小時排程**: 每隔指定小時發送報告
+
+排程配置選項：
+- 系統資訊包含
+- 進程資訊包含
+- 網路資訊包含
+- 警報資訊包含
+- 自定義訊息前綴
+
+## 🛠️ 開發指南
+
+### 專案結構
+
+```
+mcp-monitoring-system/
+├── app/                    # FastAPI 應用程式
+│   ├── main.py            # 主應用程式入口
+│   ├── config.py          # 配置管理
+│   ├── api/               # API 路由
+│   │   ├── models/        # 資料模型
+│   │   └── routes/        # API 路由實現
+│   ├── core/              # 核心業務邏輯
+│   │   ├── monitors/      # 監控模組
+│   │   ├── scheduler.py   # 排程管理
+│   │   └── utils/         # 工具函數
+│   └── static/            # 靜態資源
+│       └── templates/     # HTML 模板
+├── discord_integration/   # Discord 整合
+├── data/                  # 數據儲存
+├── tests/                 # 測試檔案
+├── config/                # 配置檔案
+└── requirements.txt       # 依賴列表
+```
+
+### API 端點
+
+主要 API 端點：
+
+- `GET /` - Web 儀表板
+- `GET /api/system/info` - 系統資訊
+- `GET /api/processes/list` - 進程列表
+- `GET /api/network/connections` - 網路連接
+- `GET /api/logs/recent` - 最近日誌
+- `GET /api/services/status` - 服務狀態
+- `GET /api/filesystem/info` - 檔案系統資訊
+- `GET /api/discord/status` - Discord 狀態
+- `POST /api/discord/send-report` - 發送 Discord 報告
+- `GET /api/schedule/` - 排程列表
+- `POST /api/schedule/create` - 建立排程
+
+### 新增監控功能
+
+1. **建立新的監控類別**：
+```python
+# app/core/monitors/new_monitor.py
+from .base import BaseMonitor
+from typing import Dict, Any
+
+class NewMonitor(BaseMonitor):
+    async def get_metrics(self) -> Dict[str, Any]:
+        # 實現監控邏輯
+        return {
+            "metric_name": "value",
+            "timestamp": self.get_current_time()
+        }
+```
+
+2. **註冊 API 路由**：
+```python
+# app/api/routes/new_monitor.py
+from fastapi import APIRouter
+from app.core.monitors.new_monitor import NewMonitor
+
+router = APIRouter()
+monitor = NewMonitor()
+
+@router.get("/new-metrics")
+async def get_new_metrics():
+    return await monitor.get_metrics()
+```
+
+3. **更新主應用程式**：
+```python
+# app/main.py
+from app.api.routes import new_monitor
+
+app.include_router(new_monitor.router, prefix="/api", tags=["新監控"])
+```
+
+### 測試
 
 ```bash
-# 使用 root 權限部署
-sudo ./scripts/deploy_apache.sh
+# 運行所有測試
+python -m pytest tests/ -v
+
+# 運行特定測試
+python -m pytest tests/test_basic.py -v
+
+# 運行測試並生成覆蓋率報告
+python -m pytest tests/ --cov=app --cov-report=html
 ```
 
-### 訪問地址
-- **MCP 監控系統**：http://localhost:8003/
+## 🚀 部署
 
-### Apache 配置特色
-- **Port 8003**：避免與其他服務衝突
-- **直接服務**：高性能 MCP 監控系統
-- **Gzip 壓縮**：減少頻寬使用
-- **靜態資源快取**：優化載入速度
-- **日誌記錄**：完整的存取和錯誤日誌
+### 生產環境部署
 
-### 服務管理
+1. **使用 Gunicorn**：
 ```bash
-# 啟動/停止 Apache
-sudo systemctl start apache2
-sudo systemctl stop apache2
-
-# 啟動/停止 MCP 服務
-sudo systemctl start mcp-web
-sudo systemctl start mcp-discord-monitor
-
-# 檢查服務狀態
-sudo systemctl status apache2
-sudo systemctl status mcp-web
-
-# 檢查日誌
-sudo tail -f /var/log/apache2/mcp_monitor_access.log
-sudo tail -f /var/log/apache2/mcp_monitor_error.log
-sudo journalctl -u mcp-web -f
+gunicorn app.main:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
 ```
 
-### 架構說明
-```
-外部請求 (Port 8003)
-     ↓
-   MCP 監控系統伺服器
+2. **使用 Docker**：
+```dockerfile
+FROM python:3.12-slim
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY . .
+EXPOSE 8000
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 ```
 
-## 授權
+3. **系統服務**：
+```ini
+# /etc/systemd/system/mcp-monitor.service
+[Unit]
+Description=MCP Monitoring System
+After=network.target
 
-此專案採用 MIT 授權條款。
+[Service]
+Type=simple
+User=mcp
+WorkingDirectory=/opt/mcp-monitoring-system
+ExecStart=/opt/mcp-monitoring-system/mcp_env/bin/python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### 環境配置
+
+生產環境建議配置：
+
+```bash
+# 生產環境變數
+DEBUG=false
+HOST=0.0.0.0
+PORT=8000
+LOG_LEVEL=INFO
+
+# Discord 設定
+DISCORD_BOT_TOKEN=your_production_bot_token
+DISCORD_CHANNEL_ID=your_production_channel_id
+
+# 安全設定
+ALLOWED_ORIGINS=["https://your-domain.com"]
+ENABLE_GZIP=true
+```
+
+## 🔧 故障排除
+
+### 常見問題
+
+1. **應用程式無法啟動**
+   - 檢查 Python 版本 (需要 3.10+)
+   - 確認所有依賴已安裝
+   - 檢查端口是否被占用
+
+2. **Discord 整合問題**
+   - 驗證機器人 Token 是否正確
+   - 檢查機器人是否有適當權限
+   - 確認頻道 ID 是否正確
+
+3. **排程不執行**
+   - 檢查排程配置是否正確
+   - 確認排程器是否啟動
+   - 檢查日誌中的錯誤訊息
+
+4. **權限問題**
+   - 確保有足夠的系統權限
+   - 檢查檔案權限設定
+   - 以適當用戶運行服務
+
+### 日誌檢查
+
+```bash
+# 查看應用程式日誌
+tail -f logs/app.log
+
+# 查看 Discord 日誌
+tail -f logs/discord_monitor.log
+
+# 查看排程日誌
+tail -f logs/scheduler.log
+```
+
+## 🧪 CI/CD
+
+專案使用 GitHub Actions 進行持續整合：
+
+- **測試**: 自動運行單元測試
+- **程式碼品質**: flake8 程式碼檢查
+- **安全檢查**: bandit 安全掃描
+- **建置測試**: FastAPI 應用程式啟動測試
+
+## 🤝 貢獻指南
+
+歡迎貢獻程式碼！請遵循以下步驟：
+
+1. Fork 此儲存庫
+2. 建立功能分支 (`git checkout -b feature/新功能`)
+3. 提交更改 (`git commit -am '新增新功能'`)
+4. 推送到分支 (`git push origin feature/新功能`)
+5. 建立 Pull Request
+
+### 程式碼規範
+
+- 使用 Python 3.10+ 語法
+- 遵循 PEP 8 程式碼風格
+- 加入適當的文檔字串
+- 編寫單元測試
+- 使用型別提示
+
+## 📄 授權
+
+本專案採用 MIT 授權條款 - 詳見 [LICENSE](LICENSE) 檔案
+
+## 📞 聯絡方式
+
+- **專案儲存庫**: https://github.com/Mongbao/mcp-monitoring-system
+- **問題回報**: https://github.com/Mongbao/mcp-monitoring-system/issues
+- **功能請求**: https://github.com/Mongbao/mcp-monitoring-system/discussions
+
+## 🙏 致謝
+
+感謝所有貢獻者和以下專案：
+
+- [FastAPI](https://fastapi.tiangolo.com/) - 現代化 Web 框架
+- [psutil](https://github.com/giampaolo/psutil) - 系統監控庫
+- [Discord.py](https://discordpy.readthedocs.io/) - Discord API 整合
+- [Pydantic](https://pydantic-docs.helpmanual.io/) - 資料驗證
+- [Uvicorn](https://www.uvicorn.org/) - ASGI 服務器
+
+---
+
+⭐ 如果這個專案對您有幫助，請給我們一個 Star！
