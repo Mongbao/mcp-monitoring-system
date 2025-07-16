@@ -16,17 +16,44 @@ import logging
 from dotenv import load_dotenv
 
 # 載入環境變數
-load_dotenv('/home/bao/mcp_use/.env')
+def load_environment():
+    """載入環境變數，處理檔案路徑不存在的情況"""
+    env_paths = [
+        '/home/bao/mcp_use/.env',
+        os.path.join(os.path.dirname(__file__), '..', '.env'),
+        '.env'
+    ]
+    
+    for env_path in env_paths:
+        if os.path.exists(env_path):
+            load_dotenv(env_path)
+            break
+
+load_environment()
 
 # 設定日誌
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('/home/bao/mcp_use/logs/discord_monitor.log'),
-        logging.StreamHandler()
-    ]
-)
+def setup_logging():
+    """設定日誌，處理檔案路徑不存在的情況"""
+    handlers = [logging.StreamHandler()]
+    
+    try:
+        # 嘗試使用專案相對路徑
+        from pathlib import Path
+        log_dir = Path(__file__).parent.parent / "logs"
+        log_dir.mkdir(exist_ok=True)
+        log_file = log_dir / "discord_monitor.log"
+        handlers.append(logging.FileHandler(str(log_file)))
+    except (OSError, PermissionError):
+        # 如果無法創建日誌檔案，只使用控制台輸出
+        pass
+    
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        handlers=handlers
+    )
+
+setup_logging()
 logger = logging.getLogger(__name__)
 
 class MCPDiscordMonitor:

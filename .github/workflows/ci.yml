@@ -41,7 +41,7 @@ jobs:
         python -c "from app.api.models.schedule import ScheduleConfig; print('✅ 排程模型可以正常導入')"
         
         # 測試 Discord 集成模組
-        python -c "from discord_integration.mcp_discord_system_monitor import DiscordSystemMonitor; print('✅ Discord 系統監控可以正常導入')"
+        python -c "from discord_integration.mcp_discord_system_monitor import MCPDiscordMonitor; print('✅ Discord 系統監控可以正常導入')"
         
         # 運行測試套件
         if [ -d "tests" ] && [ -n "$(ls -A tests)" ]; then
