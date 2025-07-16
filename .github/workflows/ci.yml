@@ -34,17 +34,14 @@ jobs:
     
     - name: Run tests
       run: |
-        # 測試 MCP 伺服器模組是否可以正常導入
-        python -c "import mcp_servers.mcp_system_monitor; print('✅ mcp_system_monitor 可以正常導入')"
-        python -c "import mcp_servers.mcp_process_monitor; print('✅ mcp_process_monitor 可以正常導入')"
-        python -c "import mcp_servers.mcp_network_monitor; print('✅ mcp_network_monitor 可以正常導入')"
-        python -c "import mcp_servers.mcp_history_manager; print('✅ mcp_history_manager 可以正常導入')"
-        python -c "import mcp_servers.mcp_service_controller; print('✅ mcp_service_controller 可以正常導入')"
-        python -c "import mcp_servers.mcp_log_monitor; print('✅ mcp_log_monitor 可以正常導入')"
-        
         # 測試 FastAPI 應用程式
         python -c "from app.main import app; print('✅ FastAPI 應用程式可以正常導入')"
         python -c "from app.core.scheduler import scheduler; print('✅ Discord 排程器可以正常導入')"
+        python -c "from app.core.monitors.discord import DiscordMonitor; print('✅ Discord 監控模組可以正常導入')"
+        python -c "from app.api.models.schedule import ScheduleConfig; print('✅ 排程模型可以正常導入')"
+        
+        # 測試 Discord 集成模組
+        python -c "from discord_integration.mcp_discord_system_monitor import DiscordSystemMonitor; print('✅ Discord 系統監控可以正常導入')"
         
         # 運行測試套件
         if [ -d "tests" ] && [ -n "$(ls -A tests)" ]; then
