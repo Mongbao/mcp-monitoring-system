@@ -44,10 +44,10 @@ jobs:
         python -c "from discord_integration.mcp_discord_system_monitor import MCPDiscordMonitor; print('✅ Discord 系統監控可以正常導入')"
         
         # 運行測試套件
-        if [ -d "tests" ] && [ -n "$(ls -A tests)" ]; then
+        if [ -d "tests" ] && [ -n "$(find tests -name '*.py' -not -name '__init__.py' -print -quit)" ]; then
           pytest tests/ -v
         else
-          echo "✅ 測試目錄為空或不存在，跳過測試"
+          echo "✅ 測試目錄為空或無測試檔案，跳過測試"
         fi
     
     - name: Check code quality
