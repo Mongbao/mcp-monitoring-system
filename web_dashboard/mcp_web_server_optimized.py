@@ -755,6 +755,574 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
                 text-overflow: ellipsis;
             }
         }
+        
+        /* 響應式設計 - 手機版佈局優化 */
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px 10px;
+                text-align: center;
+            }
+            .header h1 {
+                font-size: 1.8rem;
+                margin-bottom: 8px;
+            }
+            .header p {
+                font-size: 0.9rem;
+                margin-bottom: 12px;
+            }
+            .refresh-btn {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+            
+            /* 主要佈局 */
+            .dashboard {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                padding: 10px;
+            }
+            
+            /* 卡片樣式 */
+            .card {
+                padding: 15px;
+                border-radius: 12px;
+            }
+            .card h3 {
+                font-size: 1.1rem;
+                margin-bottom: 12px;
+            }
+            
+            /* 健康度分數 */
+            .health-score {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            .health-circle {
+                width: 70px;
+                height: 70px;
+                font-size: 16px;
+            }
+            .health-title {
+                font-size: 1.1rem;
+            }
+            .health-metric {
+                padding: 6px 12px;
+                margin-bottom: 6px;
+            }
+            
+            /* 服務項目 */
+            .service-item {
+                padding: 12px;
+                border-radius: 8px;
+            }
+            .service-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            .service-name {
+                font-size: 14px;
+                font-weight: 600;
+            }
+            .service-pid {
+                font-size: 12px;
+            }
+            .service-metrics {
+                gap: 8px;
+                margin-top: 8px;
+            }
+            .metric {
+                padding: 4px 8px;
+                font-size: 12px;
+            }
+            .metric-label {
+                font-size: 11px;
+            }
+            .metric-value {
+                font-size: 12px;
+                font-weight: 600;
+            }
+            
+            /* 分頁控制 */
+            .pagination-controls {
+                flex-direction: column;
+                gap: 10px;
+                align-items: stretch;
+            }
+            .pagination-controls label {
+                justify-content: space-between;
+            }
+            .page-info {
+                text-align: center;
+            }
+            
+            /* 虛擬滾動容器 */
+            .virtual-scroll-container {
+                height: 400px;
+            }
+            
+            /* 日誌項目 */
+            .log-item {
+                padding: 10px;
+                font-size: 12px;
+            }
+            
+            /* 圖表 */
+            .lazy-chart {
+                height: 200px;
+            }
+            .chart-placeholder {
+                font-size: 14px;
+                padding: 40px 20px;
+            }
+        }
+        
+        /* 響應式設計 - 平板電腦適配 */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .dashboard {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+                padding: 15px;
+            }
+            
+            .card {
+                padding: 18px;
+            }
+            
+            .health-score {
+                gap: 18px;
+            }
+            .health-circle {
+                width: 75px;
+                height: 75px;
+                font-size: 18px;
+            }
+            
+            .service-item {
+                padding: 14px;
+            }
+            
+            .virtual-scroll-container {
+                height: 450px;
+            }
+            
+            .lazy-chart {
+                height: 250px;
+            }
+        }
+        
+        /* 響應式設計 - 不同解析度下的文字大小調整 */
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            .header p {
+                font-size: 0.8rem;
+            }
+            
+            .card h3 {
+                font-size: 1rem;
+            }
+            
+            .health-title {
+                font-size: 1rem;
+            }
+            .health-metric {
+                font-size: 13px;
+            }
+            
+            .service-name {
+                font-size: 13px;
+            }
+            .service-pid {
+                font-size: 11px;
+            }
+            .metric {
+                font-size: 11px;
+            }
+            
+            .log-item {
+                font-size: 11px;
+            }
+        }
+        
+        /* 高解析度螢幕優化 */
+        @media (min-width: 1440px) {
+            .dashboard {
+                grid-template-columns: repeat(4, 1fr);
+                max-width: 1600px;
+                margin: 0 auto;
+            }
+            
+            .card {
+                padding: 25px;
+            }
+            
+            .health-circle {
+                width: 90px;
+                height: 90px;
+                font-size: 22px;
+            }
+            
+            .service-item {
+                padding: 18px;
+            }
+            
+            .virtual-scroll-container {
+                height: 600px;
+            }
+        }
+        
+        /* 互動性增強 - 服務詳細資訊模態框 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f3f4;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6c757d;
+            padding: 5px;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+        
+        .modal-close:hover {
+            background: #f8f9fa;
+            color: #495057;
+        }
+        
+        .service-detail-section {
+            margin-bottom: 20px;
+        }
+        
+        .service-detail-section h4 {
+            color: #495057;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .service-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+        
+        .service-detail-item {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .service-detail-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 4px;
+        }
+        
+        .service-detail-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            word-break: break-all;
+        }
+        
+        .service-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .service-action-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .service-action-btn.primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .service-action-btn.primary:hover {
+            background: #2980b9;
+        }
+        
+        .service-action-btn.danger {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .service-action-btn.danger:hover {
+            background: #c0392b;
+        }
+        
+        .service-action-btn.warning {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .service-action-btn.warning:hover {
+            background: #e67e22;
+        }
+        
+        /* 搜尋/篩選功能 */
+        .search-filter-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.2s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .filter-select {
+            padding: 10px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+        }
+        
+        .filter-select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .clear-filters-btn {
+            padding: 10px 15px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .clear-filters-btn:hover {
+            background: #5a6268;
+        }
+        
+        .search-results-info {
+            margin-bottom: 15px;
+            padding: 8px 15px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #1976d2;
+        }
+        
+        /* 服務狀態即時通知 */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1100;
+            pointer-events: none;
+        }
+        
+        .notification {
+            background: white;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-left: 4px solid #3498db;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+            pointer-events: auto;
+            max-width: 300px;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            border-left-color: #27ae60;
+        }
+        
+        .notification.warning {
+            border-left-color: #f39c12;
+        }
+        
+        .notification.error {
+            border-left-color: #e74c3c;
+        }
+        
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        
+        .notification-message {
+            font-size: 14px;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+        
+        .notification-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #6c757d;
+            padding: 2px;
+        }
+        
+        .notification-close:hover {
+            color: #495057;
+        }
+        
+        /* 服務項目點擊效果 */
+        .service-item {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .service-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .service-item:active {
+            transform: translateY(0);
+        }
+        
+        /* 載入狀態指示器 */
+        .loading-indicator {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 響應式調整 */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+            }
+            
+            .service-detail-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .service-actions {
+                flex-direction: column;
+            }
+            
+            .search-filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-input {
+                min-width: auto;
+            }
+            
+            .notification-container {
+                right: 10px;
+                left: 10px;
+            }
+            
+            .notification {
+                max-width: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -837,6 +1405,34 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
         
         <div class="card" style="grid-column: 1 / -1;">
             <h3>🔧 服務監控與控制</h3>
+            
+            <!-- 搜尋/篩選功能 -->
+            <div class="search-filter-bar">
+                <input type="text" id="service-search" class="search-input" placeholder="🔍 搜尋服務名稱、PID或命令..." onkeyup="handleServiceSearch()">
+                <select id="status-filter" class="filter-select" onchange="handleStatusFilter()">
+                    <option value="">所有狀態</option>
+                    <option value="running">運行中</option>
+                    <option value="sleeping">休眠中</option>
+                    <option value="stopped">已停止</option>
+                    <option value="zombie">殭屍進程</option>
+                </select>
+                <select id="cpu-filter" class="filter-select" onchange="handleCpuFilter()">
+                    <option value="">CPU 使用率</option>
+                    <option value="high">高 (>10%)</option>
+                    <option value="medium">中 (1-10%)</option>
+                    <option value="low">低 (<1%)</option>
+                </select>
+                <select id="memory-filter" class="filter-select" onchange="handleMemoryFilter()">
+                    <option value="">記憶體使用率</option>
+                    <option value="high">高 (>5%)</option>
+                    <option value="medium">中 (1-5%)</option>
+                    <option value="low">低 (<1%)</option>
+                </select>
+                <button class="clear-filters-btn" onclick="clearAllFilters()">清除篩選</button>
+            </div>
+            
+            <div id="search-results-info" class="search-results-info" style="display: none;"></div>
+            
             <div class="pagination-controls">
                 <label>
                     排序: 
@@ -1717,6 +2313,449 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             
             console.log('數據刷新完成');
         }
+    </script>
+    
+    <!-- 服務詳細資訊模態框 -->
+    <div id="service-modal" class="modal-overlay" onclick="closeServiceModal(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-service-name">服務詳細資訊</h3>
+                <button class="modal-close" onclick="closeServiceModal()">&times;</button>
+            </div>
+            <div id="modal-service-content">
+                <!-- 服務詳細資訊將在這裡動態載入 -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- 通知容器 -->
+    <div id="notification-container" class="notification-container"></div>
+    
+    <script>
+        // 搜尋和篩選功能
+        let searchFilters = {
+            search: '',
+            status: '',
+            cpu: '',
+            memory: ''
+        };
+        
+        let filteredServices = [];
+        let originalServices = [];
+        
+        function handleServiceSearch() {
+            const searchValue = document.getElementById('service-search').value.toLowerCase();
+            searchFilters.search = searchValue;
+            applyFilters();
+        }
+        
+        function handleStatusFilter() {
+            const statusValue = document.getElementById('status-filter').value;
+            searchFilters.status = statusValue;
+            applyFilters();
+        }
+        
+        function handleCpuFilter() {
+            const cpuValue = document.getElementById('cpu-filter').value;
+            searchFilters.cpu = cpuValue;
+            applyFilters();
+        }
+        
+        function handleMemoryFilter() {
+            const memoryValue = document.getElementById('memory-filter').value;
+            searchFilters.memory = memoryValue;
+            applyFilters();
+        }
+        
+        function clearAllFilters() {
+            document.getElementById('service-search').value = '';
+            document.getElementById('status-filter').value = '';
+            document.getElementById('cpu-filter').value = '';
+            document.getElementById('memory-filter').value = '';
+            
+            searchFilters = {
+                search: '',
+                status: '',
+                cpu: '',
+                memory: ''
+            };
+            
+            applyFilters();
+        }
+        
+        function applyFilters() {
+            if (!originalServices.length) {
+                originalServices = virtualScrollList.data || [];
+            }
+            
+            filteredServices = originalServices.filter(service => {
+                // 文字搜尋
+                if (searchFilters.search) {
+                    const searchText = searchFilters.search;
+                    const matchesSearch = (
+                        service.name.toLowerCase().includes(searchText) ||
+                        service.pid.toString().includes(searchText) ||
+                        (service.cmdline && service.cmdline.toLowerCase().includes(searchText))
+                    );
+                    if (!matchesSearch) return false;
+                }
+                
+                // 狀態篩選
+                if (searchFilters.status) {
+                    const status = service.status.toLowerCase();
+                    if (searchFilters.status === 'running' && status !== 'running') return false;
+                    if (searchFilters.status === 'sleeping' && status !== 'sleeping') return false;
+                    if (searchFilters.status === 'stopped' && status !== 'stopped') return false;
+                    if (searchFilters.status === 'zombie' && status !== 'zombie') return false;
+                }
+                
+                // CPU 篩選
+                if (searchFilters.cpu) {
+                    const cpuPercent = service.cpu_percent || 0;
+                    if (searchFilters.cpu === 'high' && cpuPercent <= 10) return false;
+                    if (searchFilters.cpu === 'medium' && (cpuPercent <= 1 || cpuPercent > 10)) return false;
+                    if (searchFilters.cpu === 'low' && cpuPercent >= 1) return false;
+                }
+                
+                // 記憶體篩選
+                if (searchFilters.memory) {
+                    const memoryPercent = service.memory_percent || 0;
+                    if (searchFilters.memory === 'high' && memoryPercent <= 5) return false;
+                    if (searchFilters.memory === 'medium' && (memoryPercent <= 1 || memoryPercent > 5)) return false;
+                    if (searchFilters.memory === 'low' && memoryPercent >= 1) return false;
+                }
+                
+                return true;
+            });
+            
+            // 更新搜尋結果資訊
+            const resultsInfo = document.getElementById('search-results-info');
+            const hasActiveFilters = Object.values(searchFilters).some(filter => filter !== '');
+            
+            if (hasActiveFilters) {
+                resultsInfo.style.display = 'block';
+                resultsInfo.textContent = `找到 ${filteredServices.length} 個符合條件的服務 (共 ${originalServices.length} 個)`;
+            } else {
+                resultsInfo.style.display = 'none';
+            }
+            
+            // 更新虛擬滾動列表
+            virtualScrollList.setData(filteredServices);
+            
+            // 重置分頁
+            currentPage = 1;
+            updatePaginationInfo();
+        }
+        
+        function updatePaginationInfo() {
+            const totalCount = filteredServices.length || originalServices.length;
+            document.getElementById('page-info').textContent = 
+                `第 ${currentPage} 頁，共 ${totalPages} 頁 (總計 ${totalCount} 個服務)`;
+        }
+        
+        // 服務詳細資訊模態框
+        async function showServiceDetails(serviceData) {
+            const modal = document.getElementById('service-modal');
+            const modalTitle = document.getElementById('modal-service-name');
+            const modalContent = document.getElementById('modal-service-content');
+            
+            modalTitle.textContent = serviceData.name;
+            modalContent.innerHTML = '<div class="loading-indicator"></div>';
+            
+            modal.classList.add('active');
+            
+            try {
+                // 獲取詳細資訊
+                const response = await fetch(`/api/services/control?action=info&pid=${serviceData.pid}`);
+                const detailData = await response.json();
+                
+                if (detailData.service_info) {
+                    const info = detailData.service_info;
+                    const createTime = new Date(info.create_time * 1000);
+                    
+                    modalContent.innerHTML = `
+                        <div class="service-detail-section">
+                            <h4>基本資訊</h4>
+                            <div class="service-detail-grid">
+                                <div class="service-detail-item">
+                                    <div class="service-detail-label">服務名稱</div>
+                                    <div class="service-detail-value">${info.name}</div>
+                                </div>
+                                <div class="service-detail-item">
+                                    <div class="service-detail-label">進程 ID</div>
+                                    <div class="service-detail-value">${info.pid}</div>
+                                </div>
+                                <div class="service-detail-item">
+                                    <div class="service-detail-label">狀態</div>
+                                    <div class="service-detail-value">${info.status}</div>
+                                </div>
+                                <div class="service-detail-item">
+                                    <div class="service-detail-label">建立時間</div>
+                                    <div class="service-detail-value">${createTime.toLocaleString()}</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="service-detail-section">
+                            <h4>資源使用</h4>
+                            <div class="service-detail-grid">
+                                <div class="service-detail-item">
+                                    <div class="service-detail-label">CPU 使用率</div>
+                                    <div class="service-detail-value">${info.cpu_percent?.toFixed(2) || 0}%</div>
+                                </div>
+                                <div class="service-detail-item">
+                                    <div class="service-detail-label">記憶體使用率</div>
+                                    <div class="service-detail-value">${info.memory_percent?.toFixed(2) || 0}%</div>
+                                </div>
+                                <div class="service-detail-item">
+                                    <div class="service-detail-label">工作目錄</div>
+                                    <div class="service-detail-value">${info.cwd || 'N/A'}</div>
+                                </div>
+                                <div class="service-detail-item">
+                                    <div class="service-detail-label">用戶</div>
+                                    <div class="service-detail-value">${info.username || 'N/A'}</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="service-detail-section">
+                            <h4>命令行</h4>
+                            <div class="service-detail-item">
+                                <div class="service-detail-label">完整命令</div>
+                                <div class="service-detail-value">${info.cmdline || 'N/A'}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="service-actions">
+                            <button class="service-action-btn warning" onclick="terminateService(${info.pid}, false)">
+                                ⏹️ 正常終止
+                            </button>
+                            <button class="service-action-btn danger" onclick="terminateService(${info.pid}, true)">
+                                🛑 強制終止
+                            </button>
+                            <button class="service-action-btn primary" onclick="refreshServiceDetails(${info.pid})">
+                                🔄 重新整理
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    modalContent.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #6c757d;">
+                            <div style="font-size: 48px; margin-bottom: 20px;">⚠️</div>
+                            <div>無法獲取服務詳細資訊</div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                modalContent.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #e74c3c;">
+                        <div style="font-size: 48px; margin-bottom: 20px;">❌</div>
+                        <div>載入失敗: ${error.message}</div>
+                    </div>
+                `;
+            }
+        }
+        
+        function closeServiceModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            
+            const modal = document.getElementById('service-modal');
+            modal.classList.remove('active');
+        }
+        
+        async function terminateService(pid, force = false) {
+            const action = force ? '強制終止' : '正常終止';
+            
+            if (!confirm(`確定要${action}進程 ${pid} 嗎？`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/services/control', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'terminate',
+                        pid: pid,
+                        force: force
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('成功', result.message, 'success');
+                    closeServiceModal();
+                    // 重新載入服務列表
+                    setTimeout(() => {
+                        updateServicesInfo();
+                    }, 1000);
+                } else {
+                    showNotification('錯誤', result.message, 'error');
+                }
+            } catch (error) {
+                showNotification('錯誤', `操作失敗: ${error.message}`, 'error');
+            }
+        }
+        
+        async function refreshServiceDetails(pid) {
+            const modalContent = document.getElementById('modal-service-content');
+            modalContent.innerHTML = '<div class="loading-indicator"></div>';
+            
+            // 重新載入服務詳細資訊
+            const serviceData = { pid: pid };
+            setTimeout(() => {
+                showServiceDetails(serviceData);
+            }, 500);
+        }
+        
+        // 通知系統
+        function showNotification(title, message, type = 'info') {
+            const container = document.getElementById('notification-container');
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            
+            notification.innerHTML = `
+                <div class="notification-title">${title}</div>
+                <div class="notification-message">${message}</div>
+                <button class="notification-close" onclick="this.parentElement.remove()">&times;</button>
+            `;
+            
+            container.appendChild(notification);
+            
+            // 觸發顯示動畫
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            // 自動移除
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.remove();
+                    }
+                }, 300);
+            }, 5000);
+        }
+        
+        // 修改服務項目點擊事件
+        function createServiceItem(service, index) {
+            const div = document.createElement('div');
+            div.className = 'service-item';
+            div.onclick = () => showServiceDetails(service);
+            
+            const statusClass = service.status === 'running' ? 'status-running' : 
+                               service.status === 'sleeping' ? 'status-sleeping' : 'status-stopped';
+            
+            div.innerHTML = `
+                <div class="service-header">
+                    <span class="service-name">${service.name}</span>
+                    <span class="service-pid">PID: ${service.pid}</span>
+                </div>
+                <div class="service-metrics">
+                    <div class="metric">
+                        <span class="metric-label">狀態:</span>
+                        <span class="metric-value ${statusClass}">${service.status}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">CPU:</span>
+                        <span class="metric-value">${service.cpu_percent?.toFixed(1) || 0}%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">記憶體:</span>
+                        <span class="metric-value">${service.memory_percent?.toFixed(1) || 0}%</span>
+                    </div>
+                </div>
+            `;
+            
+            return div;
+        }
+        
+        // 重寫 updateServicesInfo 函數以支援篩選
+        const originalUpdateServicesInfo = updateServicesInfo;
+        updateServicesInfo = async function() {
+            await originalUpdateServicesInfo();
+            
+            // 保存原始數據
+            if (virtualScrollList && virtualScrollList.data) {
+                originalServices = [...virtualScrollList.data];
+                
+                // 如果有篩選條件，重新應用篩選
+                const hasActiveFilters = Object.values(searchFilters).some(filter => filter !== '');
+                if (hasActiveFilters) {
+                    applyFilters();
+                }
+            }
+        };
+        
+        // 服務狀態變化監控
+        let previousServiceStates = {};
+        
+        function monitorServiceChanges() {
+            if (!originalServices.length) return;
+            
+            originalServices.forEach(service => {
+                const serviceKey = `${service.name}-${service.pid}`;
+                const currentState = {
+                    status: service.status,
+                    cpu_percent: service.cpu_percent,
+                    memory_percent: service.memory_percent
+                };
+                
+                if (previousServiceStates[serviceKey]) {
+                    const prevState = previousServiceStates[serviceKey];
+                    
+                    // 檢查狀態變化
+                    if (prevState.status !== currentState.status) {
+                        showNotification(
+                            '服務狀態變化',
+                            `${service.name} (PID: ${service.pid}) 狀態從 ${prevState.status} 變為 ${currentState.status}`,
+                            currentState.status === 'running' ? 'success' : 'warning'
+                        );
+                    }
+                    
+                    // 檢查高 CPU 使用率
+                    if (currentState.cpu_percent > 80 && prevState.cpu_percent <= 80) {
+                        showNotification(
+                            '高 CPU 使用率警告',
+                            `${service.name} (PID: ${service.pid}) CPU 使用率達到 ${currentState.cpu_percent.toFixed(1)}%`,
+                            'warning'
+                        );
+                    }
+                    
+                    // 檢查高記憶體使用率
+                    if (currentState.memory_percent > 80 && prevState.memory_percent <= 80) {
+                        showNotification(
+                            '高記憶體使用率警告',
+                            `${service.name} (PID: ${service.pid}) 記憶體使用率達到 ${currentState.memory_percent.toFixed(1)}%`,
+                            'warning'
+                        );
+                    }
+                }
+                
+                previousServiceStates[serviceKey] = currentState;
+            });
+        }
+        
+        // 定期監控服務狀態變化
+        setInterval(monitorServiceChanges, 5000);
+        
+        // 鍵盤快捷鍵
+        document.addEventListener('keydown', function(e) {
+            // ESC 鍵關閉模態框
+            if (e.key === 'Escape') {
+                closeServiceModal();
+            }
+            
+            // Ctrl+F 聚焦搜尋框
+            if (e.ctrlKey && e.key === 'f') {
+                e.preventDefault();
+                document.getElementById('service-search').focus();
+            }
+        });
     </script>
 </body>
 </html>

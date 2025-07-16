@@ -1,0 +1,10 @@
+{
+  "cpu_warning": 70,
+  "cpu_critical": 85,
+  "memory_warning": 80,
+  "memory_critical": 90,
+  "disk_warning": 85,
+  "disk_critical": 95,
+  "load_warning": 2.0,
+  "load_critical": 4.0
+}
