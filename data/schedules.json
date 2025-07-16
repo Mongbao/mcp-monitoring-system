@@ -1,0 +1,48 @@
+{
+  "schedules": [
+    {
+      "id": "508e05bf-0462-417b-aecb-19bef10eebc0",
+      "name": "discord",
+      "description": null,
+      "type": "daily",
+      "status": "active",
+      "time": "23:00",
+      "timezone": "Asia/Taipei",
+      "weekdays": null,
+      "interval_hours": null,
+      "include_system_info": true,
+      "include_process_info": true,
+      "include_network_info": true,
+      "include_alerts": true,
+      "include_charts": false,
+      "custom_message": null,
+      "created_at": "2025-07-17 01:14:43.550775",
+      "updated_at": "2025-07-17 01:14:43.550802",
+      "last_run": null,
+      "next_run": "2025-07-17 23:00:00",
+      "run_count": 0
+    }
+  ],
+  "execution_logs": [
+    {
+      "id": "54e65e2a-5903-4dfa-9345-d6356a2088c7",
+      "schedule_id": "88faad3d-5129-43f4-baff-432bd6d8ff8f",
+      "executed_at": "2025-07-17 00:49:43.660631",
+      "success": true,
+      "message": "",
+      "error": null,
+      "execution_time_ms": 2425,
+      "discord_message_id": "1395085010033311817"
+    },
+    {
+      "id": "fbed33a5-f362-403b-9483-725cbea8daac",
+      "schedule_id": "920fd243-b14c-4aa6-b02b-d48bce02d8a7",
+      "executed_at": "2025-07-17 01:03:00.577352",
+      "success": true,
+      "message": "",
+      "error": null,
+      "execution_time_ms": 2397,
+      "discord_message_id": "1395088352889536663"
+    }
+  ]
+}
