@@ -24,7 +24,13 @@ logger = logging.getLogger(__name__)
 class DiscordScheduler:
     """Discord 報告排程管理器"""
     
-    def __init__(self, config_file: str = "/home/bao/mcp_use/data/schedules.json"):
+    def __init__(self, config_file: str = None):
+        # 使用相對路徑或臨時目錄
+        if config_file is None:
+            # 嘗試使用項目目錄下的 data 目錄
+            project_root = Path(__file__).parent.parent.parent
+            config_file = project_root / "data" / "schedules.json"
+        
         self.config_file = Path(config_file)
         self.schedules: Dict[str, ScheduleConfig] = {}
         self.execution_logs: List[ScheduleExecutionLog] = []
@@ -34,8 +40,15 @@ class DiscordScheduler:
         self.running = False
         self.executor = ThreadPoolExecutor(max_workers=2)
         
-        # 確保配置目錄存在
-        self.config_file.parent.mkdir(parents=True, exist_ok=True)
+        # 確保配置目錄存在（只在有寫入權限時）
+        try:
+            self.config_file.parent.mkdir(parents=True, exist_ok=True)
+        except (PermissionError, OSError):
+            # 如果無法創建目錄，使用臨時目錄
+            import tempfile
+            temp_dir = Path(tempfile.gettempdir()) / "mcp_schedules"
+            temp_dir.mkdir(parents=True, exist_ok=True)
+            self.config_file = temp_dir / "schedules.json"
         
         # 載入配置
         self.load_schedules()
@@ -59,7 +72,7 @@ class DiscordScheduler:
                     
                 logger.info(f"載入 {len(self.schedules)} 個排程配置")
         except Exception as e:
-            logger.error(f"載入排程配置失敗: {e}")
+            logger.warning(f"載入排程配置失敗: {e}，將使用空配置")
     
     def save_schedules(self):
         """保存排程配置"""
@@ -74,7 +87,7 @@ class DiscordScheduler:
                 
             logger.info("排程配置已保存")
         except Exception as e:
-            logger.error(f"保存排程配置失敗: {e}")
+            logger.warning(f"保存排程配置失敗: {e}，配置將不會持久化")
     
     def create_schedule(self, schedule_data: Dict[str, Any]) -> ScheduleConfig:
         """建立新排程"""
