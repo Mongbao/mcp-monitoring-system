@@ -1,2 +1,21 @@
+# 原有依賴
 psutil>=5.9.0
 mcp>=1.0.0
+
+# FastAPI 核心
+fastapi>=0.104.1
+uvicorn[standard]>=0.24.0
+pydantic>=2.5.0
+
+# 其他工具
+python-multipart>=0.0.6
+jinja2>=3.1.2
+aiofiles>=23.2.1
+
+# 開發和測試
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+httpx>=0.25.0
+
+# 生產部署
+gunicorn>=21.2.0
