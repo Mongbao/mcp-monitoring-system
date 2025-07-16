@@ -1,0 +1,115 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+mcp_env/
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/*.log
+
+# Environment variables (contains sensitive information)
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# MCP Configuration (contains sensitive tokens)
+.vscode/mcp.json
+
+# Keep example files
+!.env.example
+!.vscode/mcp.json.example
+logs/*.json
+
+# Config files with sensitive data
+config/*.conf
+config/*.key
+config/*.pem
+*.env
+.env
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Node modules (if any)
+node_modules/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# pytest
+.pytest_cache/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Service files
+*.service
+*.socket
+
+# Personal notes
+20250714.txt
+personal_notes.txt
+
+# SSL certificates and keys
+*.crt
+*.key
+*.pem
+*.cert
