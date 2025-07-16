@@ -32,7 +32,9 @@ mcp-monitoring-system/
 │   ├── mcp_log_analyzer.py      # 日誌分析
 │   └── mcp_process_monitor.py   # 進程監控
 ├── web_dashboard/               # Web 儀表板
-│   └── mcp_web_server.py        # Web 儀表板服務
+│   ├── mcp_web_server_optimized.py # Web 儀表板服務 (優化版)
+│   ├── optimize_frontend.py     # 前端資源優化工具
+│   └── static/                  # 靜態資源檔案
 ├── discord_integration/         # Discord 整合
 │   ├── mcp_discord_system_monitor.py # Discord 監控主程式
 │   ├── start_discord_monitor.sh # Discord 監控啟動腳本
@@ -108,6 +110,33 @@ mcp-monitoring-system/
 **環境變數：**
 - `MONITOR_PROCESSES` - 要監控的進程名稱，以逗號分隔 (預設: `apache2,nginx,mysql`)
 
+## Web 儀表板
+
+### MCP 監控系統 Web 伺服器 ⚡
+高性能監控儀表板，提供完整的系統監控功能：
+
+```bash
+# 使用腳本啟動 (推薦)
+./scripts/start_optimized_web.sh [port]
+
+# 或直接執行  
+python3 web_dashboard/mcp_web_server_optimized.py [port]
+```
+
+預設端口：8003  
+瀏覽器開啟：http://localhost:8003
+
+**功能特色：**
+- 🎯 **虛擬滾動技術** - 處理數千筆數據無延遲
+- 📈 **懶載入圖表** - 按需載入視覺化組件  
+- 🗜️ **Gzip 壓縮** - 減少網路傳輸大小
+- 📱 **響應式優化** - 完美支援行動裝置
+- ⚡ **靜態資源優化** - 快速載入體驗
+
+## MCP 伺服器
+
+MCP server 配置檔案位於 `.vscode/mcp.json`，您可以直接在 VS Code 中使用這些 server。
+
 ## 使用方法
 
 ### 在 VS Code 中使用
@@ -165,6 +194,53 @@ pip install -r requirements.txt
 1. 修改環境變數來調整監控範圍
 2. 在各個 server 中添加新的資源或工具
 3. 建立新的 MCP server 來監控其他面向
+
+## Apache 部署 (生產環境)
+
+### 快速部署
+系統設定為在 **Port 8003** 上運行：
+
+```bash
+# 使用 root 權限部署
+sudo ./scripts/deploy_apache.sh
+```
+
+### 訪問地址
+- **MCP 監控系統**：http://localhost:8003/
+
+### Apache 配置特色
+- **Port 8003**：避免與其他服務衝突
+- **直接服務**：高性能 MCP 監控系統
+- **Gzip 壓縮**：減少頻寬使用
+- **靜態資源快取**：優化載入速度
+- **日誌記錄**：完整的存取和錯誤日誌
+
+### 服務管理
+```bash
+# 啟動/停止 Apache
+sudo systemctl start apache2
+sudo systemctl stop apache2
+
+# 啟動/停止 MCP 服務
+sudo systemctl start mcp-web
+sudo systemctl start mcp-discord-monitor
+
+# 檢查服務狀態
+sudo systemctl status apache2
+sudo systemctl status mcp-web
+
+# 檢查日誌
+sudo tail -f /var/log/apache2/mcp_monitor_access.log
+sudo tail -f /var/log/apache2/mcp_monitor_error.log
+sudo journalctl -u mcp-web -f
+```
+
+### 架構說明
+```
+外部請求 (Port 8003)
+     ↓
+   MCP 監控系統伺服器
+```
 
 ## 授權
 

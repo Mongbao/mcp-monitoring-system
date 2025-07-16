@@ -347,6 +347,27 @@ def get_service_name(port):
     }
     return services.get(port, "Unknown")
 
+# 同步函數用於 Web 伺服器
+def get_network_summary():
+    """獲取網路摘要信息"""
+    try:
+        # 獲取網路統計
+        net_io = psutil.net_io_counters()
+        connections = len(psutil.net_connections())
+        interfaces = psutil.net_if_addrs()
+        
+        return {
+            "bytes_sent": net_io.bytes_sent,
+            "bytes_recv": net_io.bytes_recv,
+            "packets_sent": net_io.packets_sent,
+            "packets_recv": net_io.packets_recv,
+            "interface_count": len(interfaces),
+            "connections": connections,
+            "timestamp": datetime.now().isoformat()
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
 if __name__ == "__main__":
     import mcp.server.stdio
     mcp.server.stdio.run_server(app)

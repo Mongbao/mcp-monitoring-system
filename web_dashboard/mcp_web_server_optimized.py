@@ -94,7 +94,6 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MCP 監控系統 - 優化版</title>
-    <link rel="preload" href="/static/charts.min.js" as="script">
     <link rel="prefetch" href="/api/services/paginated">
     <style>
         /* 基本樣式 - 優化版 */
@@ -123,11 +122,31 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             transform: translateY(-2px); 
             box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
         }
-        .card h3 { margin-top: 0; color: #2c3e50; }
+        .card h3 { 
+            margin-top: 0; 
+            margin-bottom: 16px; 
+            color: #2c3e50; 
+            font-size: 18px;
+            font-weight: 600;
+        }
         .metric { 
-            display: flex; justify-content: space-between; 
-            margin: 10px 0; padding: 8px; border-radius: 4px;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            margin: 12px 0; 
+            padding: 10px 12px; 
+            border-radius: 6px;
             background-color: #f8f9fa;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .metric-label {
+            color: #495057;
+            font-weight: 500;
+        }
+        .metric-value {
+            font-weight: 600;
+            color: #2c3e50;
         }
         .refresh-btn { 
             background: linear-gradient(135deg, #3498db, #2980b9);
@@ -140,9 +159,14 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
         }
         .loading { 
-            text-align: center; color: #7f8c8d;
-            display: flex; align-items: center; justify-content: center;
-            min-height: 60px;
+            text-align: center; 
+            color: #6c757d;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            min-height: 80px;
+            font-size: 15px;
+            font-weight: 500;
         }
         .loading::after {
             content: '';
@@ -170,15 +194,41 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             position: relative;
         }
         .virtual-item {
-            padding: 8px 12px;
+            padding: 15px 16px;
             border-bottom: 1px solid #eee;
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             transition: background-color 0.15s ease;
+            min-height: 70px;
+            font-size: 14px;
+            line-height: 1.5;
         }
         .virtual-item:hover {
             background-color: #f8f9fa;
+        }
+        .virtual-item-left {
+            flex: 1;
+            padding-right: 15px;
+        }
+        .virtual-item-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 6px;
+            font-size: 15px;
+            line-height: 1.4;
+        }
+        .virtual-item-details {
+            font-size: 13px;
+            color: #6c757d;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            line-height: 1.3;
+        }
+        .virtual-item-right {
+            text-align: right;
+            min-width: 80px;
         }
         
         /* 懶載入圖表容器 */
@@ -220,13 +270,29 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
         .pagination-controls {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin: 15px 0;
+            gap: 15px;
+            margin: 18px 0;
             flex-wrap: wrap;
+            font-size: 14px;
+        }
+        .pagination-controls label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #495057;
+            font-weight: 500;
+        }
+        .pagination-controls select {
+            padding: 6px 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: white;
         }
         .page-info {
-            font-size: 0.9em;
+            font-size: 13px;
             color: #6c757d;
+            font-weight: 500;
         }
         .page-btn {
             padding: 6px 12px;
@@ -252,10 +318,31 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
         
         /* 響應式優化 */
         @media (max-width: 768px) {
-            body { padding: 10px; }
-            .dashboard { grid-template-columns: 1fr; gap: 15px; }
-            .virtual-scroll-container { height: 300px; }
-            .pagination-controls { justify-content: center; }
+            body { padding: 15px; }
+            .dashboard { grid-template-columns: 1fr; gap: 18px; }
+            .virtual-scroll-container { height: 350px; }
+            .pagination-controls { 
+                justify-content: flex-start;
+                gap: 12px;
+            }
+            .pagination-controls label {
+                font-size: 13px;
+            }
+            .virtual-item {
+                padding: 16px;
+                font-size: 13px;
+            }
+            .virtual-item-name {
+                font-size: 14px;
+                margin-bottom: 8px;
+            }
+            .virtual-item-details {
+                font-size: 12px;
+                gap: 5px;
+            }
+            .virtual-item-details div {
+                padding: 2px 0;
+            }
         }
     </style>
 </head>
@@ -388,14 +475,19 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
                 const div = document.createElement('div');
                 div.className = 'virtual-item';
                 div.innerHTML = `
-                    <div>
-                        <strong>${data.name}</strong> (PID: ${data.pid})
-                        <br><small>CPU: ${data.cpu_percent}% | 記憶體: ${data.memory_percent}%</small>
-                    </div>
-                    <div style="text-align: right;">
-                        <div class="memory-bar" style="width: 60px; height: 8px; background: #eee; border-radius: 4px;">
-                            <div style="width: ${Math.min(data.memory_percent, 100)}%; height: 100%; background: ${data.memory_percent > 80 ? '#e74c3c' : data.memory_percent > 50 ? '#f39c12' : '#27ae60'}; border-radius: 4px;"></div>
+                    <div class="virtual-item-left">
+                        <div class="virtual-item-name">${data.name}</div>
+                        <div class="virtual-item-details">
+                            <div>進程 ID: ${data.pid}</div>
+                            <div>CPU 使用率: ${data.cpu_percent.toFixed(1)}%</div>
+                            <div>記憶體使用率: ${data.memory_percent.toFixed(1)}%</div>
                         </div>
+                    </div>
+                    <div class="virtual-item-right">
+                        <div class="memory-bar" style="width: 70px; height: 10px; background: #eee; border-radius: 5px; margin-bottom: 8px;">
+                            <div style="width: ${Math.min(data.memory_percent, 100)}%; height: 100%; background: ${data.memory_percent > 80 ? '#e74c3c' : data.memory_percent > 50 ? '#f39c12' : '#27ae60'}; border-radius: 5px;"></div>
+                        </div>
+                        <div style="font-size: 12px; color: #6c757d; text-align: center;">${data.memory_percent.toFixed(1)}%</div>
                     </div>
                 `;
                 return div;
@@ -520,7 +612,7 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
             const container = document.getElementById('services-virtual-container');
-            virtualScrollList = new VirtualScrollList(container, { itemHeight: 50 });
+            virtualScrollList = new VirtualScrollList(container, { itemHeight: 70 });
             lazyChartManager = new LazyChartManager();
             
             refreshAll();
@@ -848,5 +940,5 @@ def run_optimized_server(port=8080):
 
 if __name__ == "__main__":
     import sys
-    port = int(sys.argv[1]) if len(sys.argv) > 1 else 8080
+    port = int(sys.argv[1]) if len(sys.argv) > 1 else 8003
     run_optimized_server(port)

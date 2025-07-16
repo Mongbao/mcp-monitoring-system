@@ -398,6 +398,50 @@ async def call_tool(name: str, arguments: Dict[str, Any]) -> List[Any]:
     else:
         raise ValueError(f"未知的工具: {name}")
 
+# 同步函數用於 Web 伺服器
+def get_process_summary():
+    """獲取進程摘要信息"""
+    try:
+        total_processes = len(list(psutil.process_iter()))
+        running_processes = len([p for p in psutil.process_iter() if p.status() == psutil.STATUS_RUNNING])
+        sleeping_processes = len([p for p in psutil.process_iter() if p.status() == psutil.STATUS_SLEEPING])
+        zombie_processes = len([p for p in psutil.process_iter() if p.status() == psutil.STATUS_ZOMBIE])
+        
+        return {
+            "total_processes": total_processes,
+            "running_processes": running_processes,
+            "sleeping_processes": sleeping_processes,
+            "zombie_processes": zombie_processes,
+            "timestamp": datetime.now().isoformat()
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+def get_detailed_processes():
+    """獲取詳細的進程列表"""
+    processes = []
+    try:
+        for proc in psutil.process_iter(['pid', 'name', 'status', 'cpu_percent', 'memory_percent', 'create_time']):
+            try:
+                info = proc.info
+                # 計算進程運行時間
+                create_time = datetime.fromtimestamp(info['create_time']).isoformat()
+                
+                processes.append({
+                    "pid": info['pid'],
+                    "name": info['name'] or 'Unknown',
+                    "status": info['status'],
+                    "cpu_percent": round(info['cpu_percent'] or 0, 2),
+                    "memory_percent": round(info['memory_percent'] or 0, 2),
+                    "create_time": create_time
+                })
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+        
+        return processes
+    except Exception as e:
+        return [{"error": str(e)}]
+
 if __name__ == "__main__":
     import mcp.server.stdio
     mcp.server.stdio.run_server(app)

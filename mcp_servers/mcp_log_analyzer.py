@@ -429,6 +429,45 @@ def extract_error_type(line):
     else:
         return "general"
 
+# 同步函數用於 Web 伺服器
+def get_log_summary():
+    """獲取日誌摘要信息"""
+    try:
+        total_logs = 0
+        error_count = 0
+        warning_count = 0
+        accessible_logs = []
+        
+        for log_path in LOG_PATHS:
+            if os.path.exists(log_path) and os.path.isfile(log_path):
+                accessible_logs.append(log_path)
+                try:
+                    with open(log_path, 'r', encoding='utf-8', errors='ignore') as f:
+                        lines = f.readlines()
+                        total_logs += len(lines)
+                        
+                        # 簡單的錯誤/警告計數
+                        for line in lines[-100:]:  # 只檢查最後100行
+                            line_lower = line.lower()
+                            if any(keyword in line_lower for keyword in ['error', 'failed', 'denied']):
+                                error_count += 1
+                            elif any(keyword in line_lower for keyword in ['warning', 'warn']):
+                                warning_count += 1
+                except Exception:
+                    continue
+        
+        return {
+            "total_log_files": len(LOG_PATHS),
+            "accessible_log_files": len(accessible_logs),
+            "total_lines": total_logs,
+            "error_count": error_count,
+            "warning_count": warning_count,
+            "log_paths": accessible_logs,
+            "timestamp": datetime.now().isoformat()
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
 if __name__ == "__main__":
     import mcp.server.stdio
     mcp.server.stdio.run_server(app)

@@ -225,6 +225,35 @@ async def call_tool(name: str, arguments: Dict[str, Any]) -> List[Any]:
     else:
         raise ValueError(f"未知的工具: {name}")
 
+# 同步函數用於 Web 伺服器
+def get_system_summary():
+    """獲取系統摘要信息"""
+    try:
+        cpu_percent = psutil.cpu_percent(interval=1)
+        memory = psutil.virtual_memory()
+        disk_usage = psutil.disk_usage('/')
+        load_avg = psutil.getloadavg()
+        
+        return {
+            "cpu_percent": round(cpu_percent, 2),
+            "memory_percent": round(memory.percent, 2),
+            "disk_percent": round((disk_usage.used / disk_usage.total) * 100, 2),
+            "load_avg": f"{load_avg[0]:.2f}, {load_avg[1]:.2f}, {load_avg[2]:.2f}",
+            "memory": {
+                "total_gb": round(memory.total / (1024**3), 2),
+                "used_gb": round(memory.used / (1024**3), 2),
+                "available_gb": round(memory.available / (1024**3), 2)
+            },
+            "disk": {
+                "total_gb": round(disk_usage.total / (1024**3), 2),
+                "used_gb": round(disk_usage.used / (1024**3), 2),
+                "free_gb": round(disk_usage.free / (1024**3), 2)
+            },
+            "timestamp": datetime.now().isoformat()
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
 if __name__ == "__main__":
     import mcp.server.stdio
     mcp.server.stdio.run_server(app)

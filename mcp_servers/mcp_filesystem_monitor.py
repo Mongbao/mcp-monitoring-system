@@ -286,6 +286,30 @@ async def call_tool(name: str, arguments: Dict[str, Any]) -> List[Any]:
     else:
         raise ValueError(f"未知的工具: {name}")
 
+# 同步函數用於 Web 伺服器  
+def get_filesystem_summary():
+    """獲取檔案系統摘要信息"""
+    try:
+        import psutil
+        
+        # 獲取根目錄使用情況
+        disk_usage = psutil.disk_usage('/')
+        
+        # 計算監控路徑數量
+        monitored_paths = len([path for path in WATCH_PATHS if os.path.exists(path)])
+        
+        return {
+            "monitored_paths": monitored_paths,
+            "total_space": disk_usage.total,
+            "used_space": disk_usage.used,
+            "free_space": disk_usage.free,
+            "usage_percent": round((disk_usage.used / disk_usage.total) * 100, 2),
+            "watch_paths": WATCH_PATHS,
+            "timestamp": datetime.now().isoformat()
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
 if __name__ == "__main__":
     import mcp.server.stdio
     mcp.server.stdio.run_server(app)
