@@ -136,70 +136,141 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
         /* 基本樣式 - 優化版 */
         * { box-sizing: border-box; }
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            margin: 0; padding: 20px; background-color: #f5f5f5;
-            line-height: 1.4;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans TC', sans-serif;
+            margin: 0; padding: 20px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            line-height: 1.5;
+            color: #2c3e50;
         }
         .header { 
             background: linear-gradient(135deg, #2c3e50, #3498db);
-            color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            color: white; padding: 25px; border-radius: 12px; margin-bottom: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .header h1 {
+            margin: 0 0 8px 0;
+            font-size: 2.2rem;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 1.1rem;
+            font-weight: 300;
         }
         .dashboard { 
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
-            gap: 20px; 
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
+            gap: 24px; 
         }
         .card { 
-            background: white; padding: 20px; border-radius: 8px; 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            background: rgba(255,255,255,0.95); 
+            padding: 24px; 
+            border-radius: 16px; 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
         .card:hover { 
-            transform: translateY(-2px); 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
+            transform: translateY(-4px); 
+            box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+        }
+        .card:hover::before {
+            opacity: 1;
         }
         .card h3 { 
             margin-top: 0; 
             margin-bottom: 16px; 
             color: #2c3e50; 
-            font-size: 18px;
-            font-weight: 600;
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f8f9fa;
         }
         .metric { 
             display: flex; 
             justify-content: space-between; 
             align-items: center;
-            margin: 12px 0; 
-            padding: 10px 12px; 
-            border-radius: 6px;
-            background-color: #f8f9fa;
-            font-size: 14px;
-            line-height: 1.4;
+            margin: 10px 0; 
+            padding: 12px 16px; 
+            border-radius: 12px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 1px solid rgba(52, 152, 219, 0.1);
+            font-size: 15px;
+            line-height: 1.5;
+            transition: all 0.2s ease;
+        }
+        .metric:hover {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-color: rgba(52, 152, 219, 0.3);
+            transform: translateX(4px);
         }
         .metric-label {
             color: #495057;
-            font-weight: 500;
+            font-weight: 600;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .metric-label::before {
+            content: '●';
+            color: #3498db;
+            font-size: 12px;
         }
         .metric-value {
-            font-weight: 600;
+            font-weight: 700;
             color: #2c3e50;
             white-space: nowrap;
             min-width: fit-content;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         .refresh-btn { 
             background: linear-gradient(135deg, #3498db, #2980b9);
-            color: white; border: none; padding: 10px 20px; 
-            border-radius: 4px; cursor: pointer;
-            transition: all 0.2s ease;
+            color: white; border: none; padding: 12px 24px; 
+            border-radius: 10px; cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+            position: relative;
+            overflow: hidden;
         }
         .refresh-btn:hover { 
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+            background: linear-gradient(135deg, #2980b9, #3498db);
+        }
+        .refresh-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(52, 152, 219, 0.3);
         }
         .loading { 
             text-align: center; 
@@ -207,42 +278,78 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             display: flex; 
             align-items: center; 
             justify-content: center;
-            min-height: 80px;
-            font-size: 15px;
-            font-weight: 500;
+            min-height: 120px;
+            font-size: 16px;
+            font-weight: 600;
+            flex-direction: column;
+            gap: 20px;
         }
         .loading::after {
             content: '';
-            width: 20px; height: 20px;
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #3498db;
+            width: 32px; 
+            height: 32px;
+            border: 3px solid rgba(52, 152, 219, 0.1);
+            border-top: 3px solid #3498db;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin-left: 10px;
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
         
+        /* 數據載入骨架屏 */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px;
+            height: 20px;
+            margin: 10px 0;
+        }
+        .skeleton.wide { width: 100%; }
+        .skeleton.medium { width: 60%; }
+        .skeleton.narrow { width: 40%; }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
         /* 虛擬滾動容器 */
         .virtual-scroll-container {
             height: 400px;
             overflow-y: auto;
-            border: 1px solid #e9ecef;
-            border-radius: 6px;
+            border: 2px solid rgba(52, 152, 219, 0.1);
+            border-radius: 16px;
             position: relative;
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(10px);
+        }
+        .virtual-scroll-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .virtual-scroll-container::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+            border-radius: 4px;
+        }
+        .virtual-scroll-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            border-radius: 4px;
+        }
+        .virtual-scroll-container::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #2980b9, #3498db);
         }
         .virtual-scroll-content {
             position: relative;
         }
         .virtual-item {
-            padding: 15px 16px;
-            border-bottom: 1px solid #eee;
+            padding: 18px 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            transition: background-color 0.15s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             height: 110px;
             min-height: 110px;
             max-height: 110px;
@@ -250,25 +357,39 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             line-height: 1.5;
             box-sizing: border-box;
             overflow: hidden;
+            background: rgba(255,255,255,0.8);
+            margin: 2px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         }
         .virtual-item:hover {
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.05) 0%, rgba(46, 204, 113, 0.05) 100%);
+            transform: translateX(4px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            border-color: rgba(52, 152, 219, 0.2);
         }
         .virtual-item-left {
             flex: 1;
             padding-right: 15px;
         }
         .virtual-item-name {
-            font-weight: 600;
+            font-weight: 700;
             color: #2c3e50;
-            margin-bottom: 6px;
-            font-size: 15px;
+            margin-bottom: 10px;
+            font-size: 16px;
             line-height: 1.4;
             word-break: break-word;
             overflow-wrap: break-word;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .virtual-item-name::before {
+            content: '⚙️';
+            font-size: 14px;
         }
         .virtual-item-details {
             font-size: 13px;
@@ -378,60 +499,130 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
         .health-score {
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin: 10px 0;
+            gap: 20px;
+            margin: 15px 0;
+            padding: 18px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.3);
         }
         .health-circle {
-            width: 60px;
-            height: 60px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
+            font-weight: 900;
             color: white;
-            font-size: 16px;
+            font-size: 1.4rem;
+            position: relative;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
-        .health-excellent { background: #27ae60; }
-        .health-good { background: #3498db; }
-        .health-warning { background: #f39c12; }
-        .health-critical { background: #e74c3c; }
+        .health-circle::before {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            padding: 3px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+        }
+        .health-excellent { 
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            box-shadow: 0 8px 25px rgba(39, 174, 96, 0.3);
+        }
+        .health-good { 
+            background: linear-gradient(135deg, #3498db, #5dade2);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.3);
+        }
+        .health-warning { 
+            background: linear-gradient(135deg, #f39c12, #f4d03f);
+            box-shadow: 0 8px 25px rgba(243, 156, 18, 0.3);
+        }
+        .health-critical { 
+            background: linear-gradient(135deg, #e74c3c, #ec7063);
+            box-shadow: 0 8px 25px rgba(231, 76, 60, 0.3);
+        }
         
         .health-details {
             flex: 1;
         }
+        .health-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
         .health-metric {
             display: flex;
             justify-content: space-between;
-            margin: 5px 0;
-            font-size: 13px;
+            align-items: center;
+            margin: 8px 0;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+        .health-metric-label {
+            color: #495057;
+        }
+        .health-metric-value {
+            color: #2c3e50;
+            font-weight: 700;
         }
         
         /* 警報樣式 */
         .alert-item {
-            padding: 10px;
-            margin: 8px 0;
-            border-radius: 6px;
-            border-left: 4px solid;
-            font-size: 13px;
+            padding: 14px 18px;
+            margin: 10px 0;
+            border-radius: 12px;
+            border-left: 6px solid;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .alert-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
         }
         .alert-critical {
-            background: #fdf2f2;
+            background: linear-gradient(135deg, #fdf2f2 0%, #faddd7 100%);
             border-color: #e74c3c;
             color: #c0392b;
         }
         .alert-warning {
-            background: #fef9e7;
+            background: linear-gradient(135deg, #fef9e7 0%, #fef5cd 100%);
             border-color: #f39c12;
             color: #d68910;
         }
         .alert-title {
-            font-weight: 600;
-            margin-bottom: 4px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .alert-title::before {
+            content: '⚠️';
+            font-size: 16px;
         }
         .alert-time {
-            font-size: 11px;
+            font-size: 12px;
             opacity: 0.8;
+            font-weight: 500;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(0,0,0,0.1);
         }
         
         /* 日誌樣式 */
@@ -732,6 +923,11 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             setData(data) {
                 this.data = data;
                 this.content.style.height = (data.length * this.itemHeight) + 'px';
+                
+                // 清除載入狀態和所有內容
+                this.content.className = 'virtual-scroll-content';
+                this.content.innerHTML = ''; // 完全清空內容
+                
                 // 清除所有現有項目
                 this.renderedItems.forEach(element => element.remove());
                 this.renderedItems.clear();
@@ -860,7 +1056,8 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
                 const endpoints = {
                     system: '/api/system',
                     process: '/api/processes',
-                    network: '/api/network'
+                    network: '/api/network',
+                    health: '/api/trends?type=health'
                 };
                 
                 const response = await fetch(endpoints[chartType]);
@@ -905,6 +1102,54 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
                                 legend: { display: false }
                             }
                         }
+                    },
+                    health: {
+                        type: 'line',
+                        data: {
+                            labels: data.trends?.map(item => {
+                                const date = new Date(item.timestamp);
+                                return date.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
+                            }) || [],
+                            datasets: [{
+                                label: '整體健康度',
+                                data: data.trends?.map(item => item.overall_score) || [],
+                                borderColor: '#3498db',
+                                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                                fill: true,
+                                tension: 0.4
+                            }, {
+                                label: 'CPU 評分',
+                                data: data.trends?.map(item => item.cpu_score) || [],
+                                borderColor: '#e74c3c',
+                                backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                                fill: false,
+                                tension: 0.4
+                            }, {
+                                label: '記憶體評分',
+                                data: data.trends?.map(item => item.memory_score) || [],
+                                borderColor: '#27ae60',
+                                backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                                fill: false,
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                title: { display: true, text: '健康度趨勢 (最近24小時)' },
+                                legend: { display: true, position: 'top' }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: 100,
+                                    title: { display: true, text: '評分' }
+                                },
+                                x: {
+                                    title: { display: true, text: '時間' }
+                                }
+                            }
+                        }
                     }
                 };
                 
@@ -932,29 +1177,73 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
         });
         
         // API 請求函數
-        async function fetchData(endpoint) {
+        async function fetchData(endpoint, timeout = 10000) {
             try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), timeout);
+                
                 const response = await fetch(endpoint, {
                     headers: {
                         'Accept-Encoding': 'gzip, deflate'
-                    }
+                    },
+                    signal: controller.signal
                 });
-                if (!response.ok) throw new Error('Network response was not ok');
-                return await response.json();
+                
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                return data;
             } catch (error) {
-                console.error('Fetch error:', error);
-                return { error: error.message };
+                console.error('Fetch error for', endpoint, ':', error);
+                
+                if (error.name === 'AbortError') {
+                    return { error: '請求超時，請檢查服務是否正常運行' };
+                }
+                
+                return { error: `無法連接到服務: ${error.message}` };
             }
         }
         
         // 更新函數
         // 新功能函數
         async function updateHealthInfo() {
-            const data = await fetchData('/api/health');
             const container = document.getElementById('health-info');
+            container.className = ''; // 移除loading class
             
-            if (data.error) {
-                container.innerHTML = `<div style="color: #e74c3c;">錯誤: ${data.error}</div>`;
+            let data;
+            try {
+                data = await fetchData('/api/health', 5000);
+                
+                if (data.error) {
+                    // 降級顯示：顯示基本訊息而不是錯誤
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 20px; color: #6c757d;">
+                            <div style="font-size: 16px; margin-bottom: 10px;">⏳</div>
+                            <div>健康度評分功能準備中...</div>
+                            <small style="opacity: 0.7;">增強功能可能需要額外啟動時間</small>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // 確保 data 是有效的對象
+                if (!data || typeof data !== 'object') {
+                    throw new Error('無效的健康度數據');
+                }
+                
+            } catch (error) {
+                console.error('健康度功能錯誤:', error);
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: #6c757d;">
+                        <div style="font-size: 16px; margin-bottom: 10px;">⚠️</div>
+                        <div>健康度評分暫時無法使用</div>
+                        <small style="opacity: 0.7;">錯誤: ${error.message}</small>
+                    </div>
+                `;
                 return;
             }
             
@@ -979,18 +1268,22 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
                         ${overallScore.toFixed(0)}
                     </div>
                     <div class="health-details">
-                        <div style="font-weight: 600; margin-bottom: 8px;">整體健康度: ${healthText}</div>
+                        <div class="health-title">🎯 整體健康度: ${healthText}</div>
                         <div class="health-metric">
-                            <span>CPU 評分:</span><span>${data.cpu?.toFixed(1) || 'N/A'}</span>
+                            <span class="health-metric-label">🔥 CPU 評分:</span>
+                            <span class="health-metric-value">${data.cpu?.toFixed(1) || 'N/A'}</span>
                         </div>
                         <div class="health-metric">
-                            <span>記憶體評分:</span><span>${data.memory?.toFixed(1) || 'N/A'}</span>
+                            <span class="health-metric-label">🧠 記憶體評分:</span>
+                            <span class="health-metric-value">${data.memory?.toFixed(1) || 'N/A'}</span>
                         </div>
                         <div class="health-metric">
-                            <span>磁碟評分:</span><span>${data.disk?.toFixed(1) || 'N/A'}</span>
+                            <span class="health-metric-label">💾 磁碟評分:</span>
+                            <span class="health-metric-value">${data.disk?.toFixed(1) || 'N/A'}</span>
                         </div>
                         <div class="health-metric">
-                            <span>進程評分:</span><span>${data.process?.toFixed(1) || 'N/A'}</span>
+                            <span class="health-metric-label">⚡ 進程評分:</span>
+                            <span class="health-metric-value">${data.process?.toFixed(1) || 'N/A'}</span>
                         </div>
                     </div>
                 </div>
@@ -998,11 +1291,38 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
         }
         
         async function updateAlertsInfo() {
-            const data = await fetchData('/api/alerts');
             const container = document.getElementById('alerts-info');
+            container.className = ''; // 移除loading class
             
-            if (data.error) {
-                container.innerHTML = `<div style="color: #e74c3c;">錯誤: ${data.error}</div>`;
+            let data;
+            try {
+                data = await fetchData('/api/alerts', 5000);
+                
+                if (data.error) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 20px; color: #6c757d;">
+                            <div style="font-size: 16px; margin-bottom: 10px;">⏳</div>
+                            <div>警報系統準備中...</div>
+                            <small style="opacity: 0.7;">增強功能可能需要額外啟動時間</small>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // 確保 data 是有效的對象
+                if (!data || typeof data !== 'object') {
+                    throw new Error('無效的警報數據');
+                }
+                
+            } catch (error) {
+                console.error('警報功能錯誤:', error);
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: #6c757d;">
+                        <div style="font-size: 16px; margin-bottom: 10px;">⚠️</div>
+                        <div>警報系統暫時無法使用</div>
+                        <small style="opacity: 0.7;">錯誤: ${error.message}</small>
+                    </div>
+                `;
                 return;
             }
             
@@ -1042,6 +1362,10 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
         async function updateLogs() {
             const levelFilter = document.getElementById('log-level-filter').value;
             const typeFilter = document.getElementById('log-type-filter').value;
+            const logsContent = document.getElementById('logs-content');
+            
+            // 移除loading class
+            logsContent.className = 'virtual-scroll-content';
             
             const params = new URLSearchParams({
                 action: 'recent',
@@ -1051,11 +1375,53 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             if (levelFilter) params.append('level', levelFilter);
             if (typeFilter) params.append('type', typeFilter);
             
-            const data = await fetchData(`/api/logs?${params}`);
+            let data;
+            try {
+                data = await fetchData(`/api/logs?${params}`, 5000);
+                
+                if (data.error) {
+                    logsContent.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #6c757d;">
+                            <div style="font-size: 20px; margin-bottom: 15px;">⏳</div>
+                            <div style="font-size: 16px; margin-bottom: 10px;">日誌監控系統準備中...</div>
+                            <small style="opacity: 0.7;">增強功能可能需要額外啟動時間</small>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // 確保 data 是有效的對象
+                if (!data || typeof data !== 'object') {
+                    throw new Error('無效的日誌數據');
+                }
+                
+            } catch (error) {
+                console.error('日誌功能錯誤:', error);
+                logsContent.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #6c757d;">
+                        <div style="font-size: 20px; margin-bottom: 15px;">⚠️</div>
+                        <div style="font-size: 16px;">日誌監控暫時無法使用</div>
+                        <small style="opacity: 0.7;">錯誤: ${error.message}</small>
+                    </div>
+                `;
+                return;
+            }
             
-            if (data.error) {
-                document.getElementById('logs-content').innerHTML = 
-                    `<div style="color: #e74c3c; padding: 20px;">錯誤: ${data.error}</div>`;
+            // 檢查是否有日誌數據
+            const logs = data.logs || [];
+            if (logs.length === 0) {
+                logsContent.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #6c757d;">
+                        <div style="font-size: 20px; margin-bottom: 15px;">📋</div>
+                        <div style="font-size: 16px; margin-bottom: 10px;">暫無日誌數據</div>
+                        <small style="opacity: 0.7;">
+                            可能原因:<br/>
+                            • 日誌文件為空<br/>
+                            • 需要系統權限讀取日誌文件<br/>
+                            • 日誌監控服務未啟動
+                        </small>
+                    </div>
+                `;
                 return;
             }
             
@@ -1067,7 +1433,7 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
                 });
             }
             
-            logsVirtualList.setData(data.logs || []);
+            logsVirtualList.setData(logs);
         }
         
         function createLogItem(log, index) {
@@ -1144,8 +1510,10 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
         }
         
         async function updateSystemInfo() {
-            const data = await fetchData('/api/system');
             const container = document.getElementById('system-info');
+            container.className = ''; // 移除loading class
+            
+            const data = await fetchData('/api/system');
             
             if (data.error) {
                 container.innerHTML = `<div style="color: #e74c3c;">錯誤: ${data.error}</div>`;
@@ -1153,16 +1521,18 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             }
             
             container.innerHTML = `
-                <div class="metric"><span>CPU 使用率:</span><span>${data.cpu_percent || 'N/A'}%</span></div>
-                <div class="metric"><span>記憶體使用率:</span><span>${data.memory_percent || 'N/A'}%</span></div>
-                <div class="metric"><span>磁碟使用率:</span><span>${data.disk_percent || 'N/A'}%</span></div>
-                <div class="metric"><span>系統負載:</span><span>${data.load_avg || 'N/A'}</span></div>
+                <div class="metric"><span class="metric-label">CPU 使用率:</span><span class="metric-value">${data.cpu_percent || 'N/A'}%</span></div>
+                <div class="metric"><span class="metric-label">記憶體使用率:</span><span class="metric-value">${data.memory_percent || 'N/A'}%</span></div>
+                <div class="metric"><span class="metric-label">磁碟使用率:</span><span class="metric-value">${data.disk_percent || 'N/A'}%</span></div>
+                <div class="metric"><span class="metric-label">系統負載:</span><span class="metric-value">${data.load_avg || 'N/A'}</span></div>
             `;
         }
         
         async function updateProcessInfo() {
-            const data = await fetchData('/api/processes');
             const container = document.getElementById('process-info');
+            container.className = ''; // 移除loading class
+            
+            const data = await fetchData('/api/processes');
             
             if (data.error) {
                 container.innerHTML = `<div style="color: #e74c3c;">錯誤: ${data.error}</div>`;
@@ -1170,16 +1540,18 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             }
             
             container.innerHTML = `
-                <div class="metric"><span>總進程數:</span><span>${data.total_processes || 'N/A'}</span></div>
-                <div class="metric"><span>執行中:</span><span style="color: #27ae60">${data.running_processes || 'N/A'}</span></div>
-                <div class="metric"><span>休眠中:</span><span>${data.sleeping_processes || 'N/A'}</span></div>
-                <div class="metric"><span>殭屍進程:</span><span style="color: #e74c3c">${data.zombie_processes || 0}</span></div>
+                <div class="metric"><span class="metric-label">總進程數:</span><span class="metric-value">${data.total_processes || 'N/A'}</span></div>
+                <div class="metric"><span class="metric-label">執行中:</span><span class="metric-value" style="color: #27ae60">${data.running_processes || 'N/A'}</span></div>
+                <div class="metric"><span class="metric-label">休眠中:</span><span class="metric-value">${data.sleeping_processes || 'N/A'}</span></div>
+                <div class="metric"><span class="metric-label">殭屍進程:</span><span class="metric-value" style="color: #e74c3c">${data.zombie_processes || 0}</span></div>
             `;
         }
         
         async function updateNetworkInfo() {
-            const data = await fetchData('/api/network');
             const container = document.getElementById('network-info');
+            container.className = ''; // 移除loading class
+            
+            const data = await fetchData('/api/network');
             
             if (data.error) {
                 container.innerHTML = `<div style="color: #e74c3c;">錯誤: ${data.error}</div>`;
@@ -1187,16 +1559,18 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             }
             
             container.innerHTML = `
-                <div class="metric"><span>已發送:</span><span>${formatBytes(data.bytes_sent || 0)}</span></div>
-                <div class="metric"><span>已接收:</span><span>${formatBytes(data.bytes_recv || 0)}</span></div>
-                <div class="metric"><span>網路介面:</span><span>${data.interface_count || 'N/A'}</span></div>
-                <div class="metric"><span>活躍連線:</span><span>${data.connections || 'N/A'}</span></div>
+                <div class="metric"><span class="metric-label">已發送:</span><span class="metric-value">${formatBytes(data.bytes_sent || 0)}</span></div>
+                <div class="metric"><span class="metric-label">已接收:</span><span class="metric-value">${formatBytes(data.bytes_recv || 0)}</span></div>
+                <div class="metric"><span class="metric-label">網路介面:</span><span class="metric-value">${data.interface_count || 'N/A'}</span></div>
+                <div class="metric"><span class="metric-label">活躍連線:</span><span class="metric-value">${data.connections || 'N/A'}</span></div>
             `;
         }
         
         async function updateFilesystemInfo() {
-            const data = await fetchData('/api/filesystem');
             const container = document.getElementById('filesystem-info');
+            container.className = ''; // 移除loading class
+            
+            const data = await fetchData('/api/filesystem');
             
             if (data.error) {
                 container.innerHTML = `<div style="color: #e74c3c;">錯誤: ${data.error}</div>`;
@@ -1204,10 +1578,10 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             }
             
             container.innerHTML = `
-                <div class="metric"><span>監控路徑:</span><span>${data.monitored_paths || 'N/A'}</span></div>
-                <div class="metric"><span>總空間:</span><span>${formatBytes(data.total_space || 0)}</span></div>
-                <div class="metric"><span>可用空間:</span><span>${formatBytes(data.free_space || 0)}</span></div>
-                <div class="metric"><span>使用率:</span><span>${data.usage_percent || 'N/A'}%</span></div>
+                <div class="metric"><span class="metric-label">監控路徑:</span><span class="metric-value">${data.monitored_paths || 'N/A'}</span></div>
+                <div class="metric"><span class="metric-label">總空間:</span><span class="metric-value">${formatBytes(data.total_space || 0)}</span></div>
+                <div class="metric"><span class="metric-label">可用空間:</span><span class="metric-value">${formatBytes(data.free_space || 0)}</span></div>
+                <div class="metric"><span class="metric-label">使用率:</span><span class="metric-value">${data.usage_percent || 'N/A'}%</span></div>
             `;
         }
         
@@ -1224,26 +1598,43 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
                 page_size: pageSize
             });
             
+            let data;
             try {
-                const data = await fetchData(`/api/services/paginated?${params}`);
+                data = await fetchData(`/api/services/paginated?${params}`);
                 
                 if (data.error) {
-                    document.getElementById('services-virtual-content').innerHTML = 
+                    const servicesContent = document.getElementById('services-virtual-content');
+                    servicesContent.className = 'virtual-scroll-content'; // 移除loading class
+                    servicesContent.innerHTML = 
                         `<div style="color: #e74c3c; padding: 20px;">錯誤: ${data.error}</div>`;
                     return;
                 }
                 
-                // 更新虛擬滾動列表
-                virtualScrollList.setData(data.services || []);
-                
-                // 更新分頁信息
-                totalPages = data.total_pages || 1;
-                document.getElementById('page-info').textContent = 
-                    `第 ${currentPage} 頁，共 ${totalPages} 頁 (總計 ${data.total_count || 0} 個服務)`;
+                // 確保 data 是有效的對象
+                if (!data || typeof data !== 'object') {
+                    throw new Error('無效的服務數據');
+                }
                 
             } catch (error) {
                 console.error('更新服務信息失敗:', error);
+                const servicesContent = document.getElementById('services-virtual-content');
+                servicesContent.className = 'virtual-scroll-content'; // 移除loading class
+                servicesContent.innerHTML = 
+                    `<div style="color: #e74c3c; padding: 20px;">載入服務信息失敗: ${error.message}</div>`;
+                return;
             }
+            
+            // 明確移除載入狀態
+            const servicesContent = document.getElementById('services-virtual-content');
+            servicesContent.className = 'virtual-scroll-content'; // 移除loading class
+            
+            // 更新虛擬滾動列表
+            virtualScrollList.setData(data.services || []);
+            
+            // 更新分頁信息
+            totalPages = data.total_pages || 1;
+            document.getElementById('page-info').textContent = 
+                `第 ${currentPage} 頁，共 ${totalPages} 頁 (總計 ${data.total_count || 0} 個服務)`;
         }
         
         function resetPagination() {
@@ -1261,16 +1652,70 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
         
         async function refreshAll() {
             console.log('刷新所有數據...');
-            await Promise.all([
+            
+            // 基本功能（必須成功）
+            const basicUpdates = [
                 updateSystemInfo(),
                 updateProcessInfo(),
                 updateNetworkInfo(),
                 updateFilesystemInfo(),
-                updateHealthInfo(),
-                updateAlertsInfo(),
-                updateLogs(),
                 updateServicesInfo()
+            ];
+            
+            // 增強功能（允許失敗）
+            const enhancedUpdates = [
+                updateHealthInfo().catch(e => {
+                    console.log('健康度功能暫時無法使用:', e);
+                    const container = document.getElementById('health-info');
+                    if (container) {
+                        container.className = '';
+                        container.innerHTML = `
+                            <div style="text-align: center; padding: 20px; color: #6c757d;">
+                                <div style="font-size: 16px; margin-bottom: 10px;">⚠️</div>
+                                <div>健康度功能暫時無法使用</div>
+                                <small style="opacity: 0.7;">錯誤: ${e.message}</small>
+                            </div>
+                        `;
+                    }
+                }),
+                updateAlertsInfo().catch(e => {
+                    console.log('警報功能暫時無法使用:', e);
+                    const container = document.getElementById('alerts-info');
+                    if (container) {
+                        container.className = '';
+                        container.innerHTML = `
+                            <div style="text-align: center; padding: 20px; color: #6c757d;">
+                                <div style="font-size: 16px; margin-bottom: 10px;">⚠️</div>
+                                <div>警報功能暫時無法使用</div>
+                                <small style="opacity: 0.7;">錯誤: ${e.message}</small>
+                            </div>
+                        `;
+                    }
+                }),
+                updateLogs().catch(e => {
+                    console.log('日誌功能暫時無法使用:', e);
+                    const logsContent = document.getElementById('logs-content');
+                    if (logsContent) {
+                        logsContent.className = 'virtual-scroll-content';
+                        logsContent.innerHTML = `
+                            <div style="text-align: center; padding: 40px; color: #6c757d;">
+                                <div style="font-size: 20px; margin-bottom: 15px;">⚠️</div>
+                                <div style="font-size: 16px; margin-bottom: 10px;">日誌監控暫時無法使用</div>
+                                <small style="opacity: 0.7;">需要系統權限才能讀取日誌文件<br/>
+                                錯誤: ${e.message}</small>
+                            </div>
+                        `;
+                    }
+                })
+            ];
+            
+            // 並行執行，但分開處理
+            await Promise.all([
+                Promise.all(basicUpdates),
+                Promise.allSettled(enhancedUpdates)
             ]);
+            
+            console.log('數據刷新完成');
         }
     </script>
 </body>
@@ -1448,33 +1893,150 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             history_manager = get_history_manager()
             
             health_score = history_manager.get_current_health_score()
+            
+            # 如果沒有歷史數據，提供預設值
+            if not health_score or health_score.get('overall', 0) == 0:
+                # 使用當前系統數據計算基本健康度
+                try:
+                    import mcp_servers.mcp_system_monitor as system_monitor
+                    import mcp_servers.mcp_process_monitor as process_monitor
+                    
+                    system_data = system_monitor.get_system_summary()
+                    process_data = process_monitor.get_process_summary()
+                    
+                    # 簡單的健康度計算
+                    cpu_score = max(0, 100 - (system_data.get('cpu_percent', 0)))
+                    memory_score = max(0, 100 - (system_data.get('memory_percent', 0)))
+                    disk_score = max(0, 100 - (system_data.get('disk_percent', 0)))
+                    process_score = max(0, 100 - (process_data.get('zombie_processes', 0)))
+                    
+                    overall_score = (cpu_score * 0.3 + memory_score * 0.3 + 
+                                   disk_score * 0.2 + process_score * 0.2)
+                    
+                    health_score = {
+                        'overall': round(overall_score, 2),
+                        'cpu': round(cpu_score, 2),
+                        'memory': round(memory_score, 2),
+                        'disk': round(disk_score, 2),
+                        'process': round(process_score, 2)
+                    }
+                except Exception as calc_error:
+                    print(f"健康度計算錯誤: {calc_error}")
+                    health_score = {
+                        'overall': 50.0,
+                        'cpu': 50.0,
+                        'memory': 50.0,
+                        'disk': 50.0,
+                        'process': 50.0
+                    }
+            
             self.send_json_response(health_score, supports_gzip)
             
         except Exception as e:
-            self.send_json_response({'error': str(e)}, supports_gzip)
+            print(f"健康度評分錯誤: {e}")
+            self.send_json_response({'error': f'健康度功能暫時無法使用: {str(e)}'}, supports_gzip)
     
     def serve_alerts(self, supports_gzip=False):
         """提供警報資訊"""
+        from datetime import datetime
+        
         try:
-            from mcp_servers.mcp_service_controller import get_service_controller
-            from mcp_servers.mcp_history_manager import get_history_manager
-            
-            service_controller = get_service_controller()
-            history_manager = get_history_manager()
-            
-            current_alerts = service_controller.get_current_alerts()
-            recent_alerts = history_manager.get_recent_alerts(24)
-            
-            data = {
-                'current_alerts': current_alerts,
-                'recent_alerts': recent_alerts,
-                'alert_count': len(current_alerts)
-            }
+            # 嘗試使用增強功能
+            try:
+                from mcp_servers.mcp_service_controller import get_service_controller
+                from mcp_servers.mcp_history_manager import get_history_manager
+                
+                service_controller = get_service_controller()
+                history_manager = get_history_manager()
+                
+                current_alerts = service_controller.get_current_alerts()
+                recent_alerts = history_manager.get_recent_alerts(24)
+                
+                data = {
+                    'current_alerts': current_alerts,
+                    'recent_alerts': recent_alerts,
+                    'alert_count': len(current_alerts)
+                }
+                
+            except Exception as enhanced_error:
+                print(f"增強警報功能錯誤: {enhanced_error}")
+                
+                # 降級：提供基本的警報檢查
+                try:
+                    import mcp_servers.mcp_system_monitor as system_monitor
+                    system_data = system_monitor.get_system_summary()
+                    
+                    current_alerts = []
+                    
+                    # 基本的警報檢查
+                    cpu_percent = system_data.get('cpu_percent', 0)
+                    memory_percent = system_data.get('memory_percent', 0)
+                    disk_percent = system_data.get('disk_percent', 0)
+                    
+                    if cpu_percent > 85:
+                        current_alerts.append({
+                            'title': 'CPU 使用率過高',
+                            'description': f'CPU 使用率達到 {cpu_percent:.1f}%',
+                            'severity': 'critical',
+                            'timestamp': datetime.now().isoformat()
+                        })
+                    elif cpu_percent > 70:
+                        current_alerts.append({
+                            'title': 'CPU 使用率警告',
+                            'description': f'CPU 使用率達到 {cpu_percent:.1f}%',
+                            'severity': 'warning',
+                            'timestamp': datetime.now().isoformat()
+                        })
+                    
+                    if memory_percent > 90:
+                        current_alerts.append({
+                            'title': '記憶體使用率過高',
+                            'description': f'記憶體使用率達到 {memory_percent:.1f}%',
+                            'severity': 'critical',
+                            'timestamp': datetime.now().isoformat()
+                        })
+                    elif memory_percent > 80:
+                        current_alerts.append({
+                            'title': '記憶體使用率警告',
+                            'description': f'記憶體使用率達到 {memory_percent:.1f}%',
+                            'severity': 'warning',
+                            'timestamp': datetime.now().isoformat()
+                        })
+                    
+                    if disk_percent > 95:
+                        current_alerts.append({
+                            'title': '磁碟空間不足',
+                            'description': f'磁碟使用率達到 {disk_percent:.1f}%',
+                            'severity': 'critical',
+                            'timestamp': datetime.now().isoformat()
+                        })
+                    elif disk_percent > 85:
+                        current_alerts.append({
+                            'title': '磁碟空間警告',
+                            'description': f'磁碟使用率達到 {disk_percent:.1f}%',
+                            'severity': 'warning',
+                            'timestamp': datetime.now().isoformat()
+                        })
+                    
+                    data = {
+                        'current_alerts': current_alerts,
+                        'recent_alerts': [],
+                        'alert_count': len(current_alerts)
+                    }
+                    
+                except Exception as basic_error:
+                    print(f"基本警報功能錯誤: {basic_error}")
+                    data = {
+                        'current_alerts': [],
+                        'recent_alerts': [],
+                        'alert_count': 0
+                    }
             
             self.send_json_response(data, supports_gzip)
             
         except Exception as e:
-            self.send_json_response({'error': str(e)}, supports_gzip)
+            print(f"警報系統錯誤: {e}")
+            self.send_json_response({'error': f'警報功能暫時無法使用: {str(e)}'}, supports_gzip)
     
     def serve_logs(self, query, supports_gzip=False):
         """提供日誌資訊"""
@@ -1617,20 +2179,37 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
 
 def run_optimized_server(port=8080):
     """運行優化的 MCP Web 伺服器"""
-    # 啟動增強功能
+    # 嘗試啟動增強功能
+    enhanced_features = []
+    
+    # 歷史數據收集
     try:
         from mcp_servers.mcp_history_manager import start_history_collection
-        from mcp_servers.mcp_service_controller import start_service_monitoring  
-        from mcp_servers.mcp_log_monitor import start_log_monitoring
-        
         start_history_collection()
-        start_service_monitoring()
-        start_log_monitoring(['system', 'auth'])
-        print("✅ 增強功能已啟動 (歷史數據、警報系統、日誌監控)")
-        
+        enhanced_features.append("歷史數據收集")
     except Exception as e:
-        print(f"⚠️  啟動增強功能時發生錯誤: {e}")
-        print("   基本監控功能仍可正常使用")
+        print(f"⚠️  歷史數據功能啟動失敗: {e}")
+    
+    # 服務監控和警報（需要psutil）
+    try:
+        from mcp_servers.mcp_service_controller import start_service_monitoring
+        start_service_monitoring()
+        enhanced_features.append("警報系統")
+    except Exception as e:
+        print(f"⚠️  警報系統啟動失敗: {e}")
+    
+    # 日誌監控
+    try:
+        from mcp_servers.mcp_log_monitor import start_log_monitoring
+        start_log_monitoring(['system', 'auth'])
+        enhanced_features.append("日誌監控")
+    except Exception as e:
+        print(f"⚠️  日誌監控啟動失敗: {e}")
+    
+    if enhanced_features:
+        print(f"✅ 已啟動增強功能: {', '.join(enhanced_features)}")
+    else:
+        print("ℹ️  基本監控功能可用，增強功能將在API調用時動態載入")
     
     server_address = ('', port)
     httpd = HTTPServer(server_address, OptimizedMCPWebHandler)
@@ -1653,17 +2232,29 @@ def run_optimized_server(port=8080):
         httpd.serve_forever()
     except KeyboardInterrupt:
         print("\n🛑 正在停止伺服器...")
+        
+        # 嘗試停止各個增強功能
         try:
             from mcp_servers.mcp_history_manager import stop_history_collection
-            from mcp_servers.mcp_service_controller import stop_service_monitoring
-            from mcp_servers.mcp_log_monitor import stop_log_monitoring
-            
             stop_history_collection()
-            stop_service_monitoring() 
+            print("✅ 歷史數據收集已停止")
+        except Exception as e:
+            print(f"⚠️  停止歷史數據功能失敗: {e}")
+        
+        try:
+            from mcp_servers.mcp_service_controller import stop_service_monitoring
+            stop_service_monitoring()
+            print("✅ 警報系統已停止")
+        except Exception as e:
+            print(f"⚠️  停止警報系統失敗: {e}")
+        
+        try:
+            from mcp_servers.mcp_log_monitor import stop_log_monitoring
             stop_log_monitoring()
-            print("✅ 增強功能已停止")
-        except:
-            pass
+            print("✅ 日誌監控已停止")
+        except Exception as e:
+            print(f"⚠️  停止日誌監控失敗: {e}")
+        
         print("✅ 伺服器已停止")
         httpd.server_close()
 
