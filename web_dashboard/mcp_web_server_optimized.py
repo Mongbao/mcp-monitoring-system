@@ -133,22 +133,65 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
     <title>MCP 監控系統 - 優化版</title>
     <link rel="prefetch" href="/api/services/paginated">
     <style>
+        /* CSS 變量 - 支援 Dark Mode */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --header-bg: linear-gradient(135deg, #2c3e50, #3498db);
+            --card-bg: rgba(255,255,255,0.95);
+            --card-border: rgba(255,255,255,0.2);
+            --text-color: #2c3e50;
+            --text-light: #6c757d;
+            --metric-bg: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            --metric-hover: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            --metric-border: rgba(52, 152, 219, 0.1);
+            --metric-border-hover: rgba(52, 152, 219, 0.3);
+            --shadow: rgba(0,0,0,0.12);
+            --shadow-hover: rgba(0,0,0,0.2);
+            --border-color: #f8f9fa;
+            --accent-color: #3498db;
+            --accent-hover: #2980b9;
+        }
+
+        /* Dark Mode 變量 */
+        [data-theme="dark"] {
+            --bg-gradient: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            --header-bg: linear-gradient(135deg, #1a252f, #2c3e50);
+            --card-bg: rgba(30,30,30,0.95);
+            --card-border: rgba(255,255,255,0.1);
+            --text-color: #e8eaed;
+            --text-light: #9aa0a6;
+            --metric-bg: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            --metric-hover: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+            --metric-border: rgba(74, 85, 104, 0.3);
+            --metric-border-hover: rgba(74, 85, 104, 0.5);
+            --shadow: rgba(0,0,0,0.3);
+            --shadow-hover: rgba(0,0,0,0.5);
+            --border-color: #4a5568;
+            --accent-color: #60a5fa;
+            --accent-hover: #3b82f6;
+        }
+
         /* 基本樣式 - 優化版 */
         * { box-sizing: border-box; }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans TC', sans-serif;
             margin: 0; padding: 20px; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--bg-gradient);
             min-height: 100vh;
             line-height: 1.5;
-            color: #2c3e50;
+            color: var(--text-color);
+            transition: all 0.3s ease;
         }
         .header { 
-            background: linear-gradient(135deg, #2c3e50, #3498db);
+            background: var(--header-bg);
             color: white; padding: 25px; border-radius: 12px; margin-bottom: 25px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 32px var(--shadow-hover);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid var(--card-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
         }
         .header h1 {
             margin: 0 0 8px 0;
@@ -168,12 +211,12 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             gap: 24px; 
         }
         .card { 
-            background: rgba(255,255,255,0.95); 
+            background: var(--card-bg); 
             padding: 24px; 
             border-radius: 16px; 
-            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            box-shadow: 0 8px 32px var(--shadow);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid var(--card-border);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
@@ -185,13 +228,13 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, #3498db, #2980b9);
+            background: linear-gradient(90deg, var(--accent-color), var(--accent-hover));
             opacity: 0;
             transition: opacity 0.3s ease;
         }
         .card:hover { 
             transform: translateY(-4px); 
-            box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+            box-shadow: 0 16px 48px var(--shadow-hover);
         }
         .card:hover::before {
             opacity: 1;
@@ -199,14 +242,14 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
         .card h3 { 
             margin-top: 0; 
             margin-bottom: 16px; 
-            color: #2c3e50; 
+            color: var(--text-color); 
             font-size: 1.4rem;
             font-weight: 700;
             display: flex;
             align-items: center;
             gap: 10px;
             padding-bottom: 12px;
-            border-bottom: 2px solid #f8f9fa;
+            border-bottom: 2px solid var(--border-color);
         }
         .metric { 
             display: flex; 
@@ -215,19 +258,20 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             margin: 10px 0; 
             padding: 12px 16px; 
             border-radius: 12px;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border: 1px solid rgba(52, 152, 219, 0.1);
+            background: var(--metric-bg);
+            border: 1px solid var(--metric-border);
             font-size: 15px;
             line-height: 1.5;
             transition: all 0.2s ease;
+            color: var(--text-color);
         }
         .metric:hover {
-            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-            border-color: rgba(52, 152, 219, 0.3);
+            background: var(--metric-hover);
+            border-color: var(--metric-border-hover);
             transform: translateX(4px);
         }
         .metric-label {
-            color: #495057;
+            color: var(--text-light);
             font-weight: 600;
             white-space: nowrap;
             overflow: hidden;
@@ -253,7 +297,7 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             background-clip: text;
         }
         .refresh-btn { 
-            background: linear-gradient(135deg, #3498db, #2980b9);
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
             color: white; border: none; padding: 12px 24px; 
             border-radius: 10px; cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -266,15 +310,49 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
         .refresh-btn:hover { 
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
-            background: linear-gradient(135deg, #2980b9, #3498db);
+            background: linear-gradient(135deg, var(--accent-hover), var(--accent-color));
         }
         .refresh-btn:active {
             transform: translateY(0);
             box-shadow: 0 2px 10px rgba(52, 152, 219, 0.3);
         }
+        
+        /* Dark Mode Toggle 按鈕 */
+        .theme-toggle {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 2px solid var(--accent-color);
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 15px;
+        }
+        .theme-toggle:hover {
+            background: var(--accent-color);
+            color: white;
+            transform: scale(1.05);
+        }
+        .theme-toggle:active {
+            transform: scale(0.95);
+        }
+        
+        /* Header 內容區域 */
+        .header-content {
+            flex: 1;
+        }
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
         .loading { 
             text-align: center; 
-            color: #6c757d;
+            color: var(--text-light);
             display: flex; 
             align-items: center; 
             justify-content: center;
@@ -416,12 +494,13 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #f8f9fa;
+            background: var(--metric-bg);
             border-radius: 6px;
             margin: 10px 0;
+            border: 1px solid var(--metric-border);
         }
         .chart-placeholder {
-            color: #6c757d;
+            color: var(--text-light);
             font-style: italic;
         }
         
@@ -571,10 +650,10 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             border: 1px solid rgba(255,255,255,0.5);
         }
         .health-metric-label {
-            color: #495057;
+            color: var(--text-light);
         }
         .health-metric-value {
-            color: #2c3e50;
+            color: var(--text-color);
             font-weight: 700;
         }
         
@@ -1327,9 +1406,17 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
 </head>
 <body>
     <div class="header">
-        <h1>🖥️ MCP 監控系統儀表板 - 優化版</h1>
-        <p>高性能即時系統監控 | 虛擬滾動 | 懶載入</p>
-        <button class="refresh-btn" onclick="refreshAll()">🔄 重新整理</button>
+        <div class="header-content">
+            <h1>🖥️ MCP 監控系統儀表板 - 優化版</h1>
+            <p>高性能即時系統監控 | 虛擬滾動 | 懶載入</p>
+        </div>
+        <div class="header-controls">
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <span id="theme-icon">🌙</span>
+                <span id="theme-text">深色模式</span>
+            </button>
+            <button class="refresh-btn" onclick="refreshAll()">🔄 重新整理</button>
+        </div>
     </div>
     
     <div class="dashboard">
@@ -1500,6 +1587,43 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
     </div>
 
     <script>
+        // Dark Mode 主題切換功能
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeButton(savedTheme);
+        }
+        
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeButton(newTheme);
+            
+            // 重新載入已載入的圖表以應用新主題
+            if (window.lazyChartManager) {
+                window.lazyChartManager.reloadChartsForTheme();
+            }
+        }
+        
+        function updateThemeButton(theme) {
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+            
+            if (theme === 'dark') {
+                themeIcon.textContent = '☀️';
+                themeText.textContent = '淺色模式';
+            } else {
+                themeIcon.textContent = '🌙';
+                themeText.textContent = '深色模式';
+            }
+        }
+        
+        // 頁面載入時初始化主題
+        document.addEventListener('DOMContentLoaded', initTheme);
+        
         // 虛擬滾動實現
         class VirtualScrollList {
             constructor(container, options = {}) {
@@ -1661,6 +1785,37 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             }
             
             createChart(canvas, chartType, data) {
+                // 檢測當前主題
+                const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+                
+                // 主題相關的顏色配置
+                const colors = {
+                    light: {
+                        textColor: '#2c3e50',
+                        gridColor: 'rgba(0, 0, 0, 0.1)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                        primary: '#3498db',
+                        success: '#27ae60',
+                        warning: '#f39c12',
+                        danger: '#e74c3c',
+                        secondary: '#95a5a6',
+                        info: '#17a2b8'
+                    },
+                    dark: {
+                        textColor: '#e8eaed',
+                        gridColor: 'rgba(255, 255, 255, 0.1)',
+                        backgroundColor: 'rgba(30, 30, 30, 0.8)',
+                        primary: '#60a5fa',
+                        success: '#34d399',
+                        warning: '#fbbf24',
+                        danger: '#f87171',
+                        secondary: '#6b7280',
+                        info: '#06b6d4'
+                    }
+                };
+                
+                const theme = isDarkMode ? colors.dark : colors.light;
+                
                 const configs = {
                     system: {
                         type: 'doughnut',
@@ -1668,13 +1823,22 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
                             labels: ['已使用', '可用'],
                             datasets: [{
                                 data: [data.cpu_percent || 0, 100 - (data.cpu_percent || 0)],
-                                backgroundColor: ['#e74c3c', '#ecf0f1']
+                                backgroundColor: [theme.danger, theme.secondary]
                             }]
                         },
                         options: {
                             responsive: true,
                             plugins: {
-                                title: { display: true, text: 'CPU 使用率分布' }
+                                title: { 
+                                    display: true, 
+                                    text: 'CPU 使用率分布',
+                                    color: theme.textColor
+                                },
+                                legend: {
+                                    labels: {
+                                        color: theme.textColor
+                                    }
+                                }
                             }
                         }
                     },
@@ -1688,14 +1852,28 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
                                     data.sleeping_processes || 0,
                                     data.zombie_processes || 0
                                 ],
-                                backgroundColor: ['#27ae60', '#3498db', '#e74c3c']
+                                backgroundColor: [theme.success, theme.primary, theme.danger]
                             }]
                         },
                         options: {
                             responsive: true,
                             plugins: {
-                                title: { display: true, text: '進程狀態分布' },
+                                title: { 
+                                    display: true, 
+                                    text: '進程狀態分布',
+                                    color: theme.textColor
+                                },
                                 legend: { display: false }
+                            },
+                            scales: {
+                                x: {
+                                    ticks: { color: theme.textColor },
+                                    grid: { color: theme.gridColor }
+                                },
+                                y: {
+                                    ticks: { color: theme.textColor },
+                                    grid: { color: theme.gridColor }
+                                }
                             }
                         }
                     },
@@ -1709,22 +1887,22 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
                             datasets: [{
                                 label: '整體健康度',
                                 data: data.trends?.map(item => item.overall_score) || [],
-                                borderColor: '#3498db',
-                                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                                borderColor: theme.primary,
+                                backgroundColor: theme.primary.includes('#') ? theme.primary + '20' : theme.primary.replace(')', ', 0.1)').replace('rgb', 'rgba'),
                                 fill: true,
                                 tension: 0.4
                             }, {
                                 label: 'CPU 評分',
                                 data: data.trends?.map(item => item.cpu_score) || [],
-                                borderColor: '#e74c3c',
-                                backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                                borderColor: theme.danger,
+                                backgroundColor: theme.danger.includes('#') ? theme.danger + '20' : theme.danger.replace(')', ', 0.1)').replace('rgb', 'rgba'),
                                 fill: false,
                                 tension: 0.4
                             }, {
                                 label: '記憶體評分',
                                 data: data.trends?.map(item => item.memory_score) || [],
-                                borderColor: '#27ae60',
-                                backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                                borderColor: theme.success,
+                                backgroundColor: theme.success.includes('#') ? theme.success + '20' : theme.success.replace(')', ', 0.1)').replace('rgb', 'rgba'),
                                 fill: false,
                                 tension: 0.4
                             }]
@@ -1732,17 +1910,39 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
                         options: {
                             responsive: true,
                             plugins: {
-                                title: { display: true, text: '健康度趨勢 (最近24小時)' },
-                                legend: { display: true, position: 'top' }
+                                title: { 
+                                    display: true, 
+                                    text: '健康度趨勢 (最近24小時)',
+                                    color: theme.textColor
+                                },
+                                legend: { 
+                                    display: true, 
+                                    position: 'top',
+                                    labels: {
+                                        color: theme.textColor
+                                    }
+                                }
                             },
                             scales: {
                                 y: {
                                     beginAtZero: true,
                                     max: 100,
-                                    title: { display: true, text: '評分' }
+                                    title: { 
+                                        display: true, 
+                                        text: '評分',
+                                        color: theme.textColor
+                                    },
+                                    ticks: { color: theme.textColor },
+                                    grid: { color: theme.gridColor }
                                 },
                                 x: {
-                                    title: { display: true, text: '時間' }
+                                    title: { 
+                                        display: true, 
+                                        text: '時間',
+                                        color: theme.textColor
+                                    },
+                                    ticks: { color: theme.textColor },
+                                    grid: { color: theme.gridColor }
                                 }
                             }
                         }
@@ -1750,6 +1950,16 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
                 };
                 
                 new Chart(canvas, configs[chartType]);
+            }
+            
+            // 重新載入已載入的圖表以應用新主題
+            reloadChartsForTheme() {
+                this.loadedCharts.forEach(chartType => {
+                    const chartContainer = document.querySelector(`[data-chart="${chartType}"]`);
+                    if (chartContainer) {
+                        this.loadChart(chartType);
+                    }
+                });
             }
         }
         
@@ -1765,6 +1975,7 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             const container = document.getElementById('services-virtual-container');
             virtualScrollList = new VirtualScrollList(container, { itemHeight: 110 });
             lazyChartManager = new LazyChartManager();
+            window.lazyChartManager = lazyChartManager;
             
             refreshAll();
             
