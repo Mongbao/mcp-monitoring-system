@@ -18,6 +18,31 @@ import mimetypes
 sys.path.insert(0, '/home/bao/mcp_use')
 
 class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
+    def do_POST(self):
+        """處理 POST 請求"""
+        parsed_url = urllib.parse.urlparse(self.path)
+        path = parsed_url.path
+        
+        # 檢查是否支援 gzip 壓縮
+        accept_encoding = self.headers.get('Accept-Encoding', '')
+        supports_gzip = 'gzip' in accept_encoding
+        
+        # 讀取請求體
+        content_length = int(self.headers.get('Content-Length', 0))
+        post_data = self.rfile.read(content_length).decode('utf-8') if content_length > 0 else '{}'
+        
+        try:
+            request_data = json.loads(post_data)
+        except json.JSONDecodeError:
+            request_data = {}
+        
+        if path == '/api/service/control':
+            self.handle_service_control(request_data, supports_gzip)
+        elif path == '/api/thresholds':
+            self.handle_threshold_update(request_data, supports_gzip)
+        else:
+            self.send_error(404, "Not Found")
+    
     def do_GET(self):
         """處理 GET 請求"""
         parsed_url = urllib.parse.urlparse(self.path)
@@ -44,6 +69,18 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             self.serve_services_info(query, supports_gzip)
         elif path == '/api/services/paginated':
             self.serve_paginated_services(query, supports_gzip)
+        elif path == '/api/trends':
+            self.serve_trend_data(query, supports_gzip)
+        elif path == '/api/health':
+            self.serve_health_score(supports_gzip)
+        elif path == '/api/alerts':
+            self.serve_alerts(supports_gzip)
+        elif path == '/api/logs':
+            self.serve_logs(query, supports_gzip)
+        elif path == '/api/service/control':
+            self.serve_service_control(query, supports_gzip)
+        elif path == '/api/thresholds':
+            self.serve_thresholds(supports_gzip)
         elif path.startswith('/static/'):
             self.serve_static_file(path, supports_gzip)
         else:
@@ -143,10 +180,16 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
         .metric-label {
             color: #495057;
             font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
         }
         .metric-value {
             font-weight: 600;
             color: #2c3e50;
+            white-space: nowrap;
+            min-width: fit-content;
         }
         .refresh-btn { 
             background: linear-gradient(135deg, #3498db, #2980b9);
@@ -200,9 +243,13 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             justify-content: space-between;
             align-items: flex-start;
             transition: background-color 0.15s ease;
-            min-height: 70px;
+            height: 110px;
+            min-height: 110px;
+            max-height: 110px;
             font-size: 14px;
             line-height: 1.5;
+            box-sizing: border-box;
+            overflow: hidden;
         }
         .virtual-item:hover {
             background-color: #f8f9fa;
@@ -217,6 +264,11 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             margin-bottom: 6px;
             font-size: 15px;
             line-height: 1.4;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .virtual-item-details {
             font-size: 13px;
@@ -225,6 +277,12 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             flex-direction: column;
             gap: 4px;
             line-height: 1.3;
+        }
+        .virtual-item-details div {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
         }
         .virtual-item-right {
             text-align: right;
@@ -316,6 +374,165 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             border-color: #3498db;
         }
         
+        /* 健康度評分樣式 */
+        .health-score {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 10px 0;
+        }
+        .health-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 16px;
+        }
+        .health-excellent { background: #27ae60; }
+        .health-good { background: #3498db; }
+        .health-warning { background: #f39c12; }
+        .health-critical { background: #e74c3c; }
+        
+        .health-details {
+            flex: 1;
+        }
+        .health-metric {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            font-size: 13px;
+        }
+        
+        /* 警報樣式 */
+        .alert-item {
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border-left: 4px solid;
+            font-size: 13px;
+        }
+        .alert-critical {
+            background: #fdf2f2;
+            border-color: #e74c3c;
+            color: #c0392b;
+        }
+        .alert-warning {
+            background: #fef9e7;
+            border-color: #f39c12;
+            color: #d68910;
+        }
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .alert-time {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+        
+        /* 日誌樣式 */
+        .log-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .log-controls select {
+            padding: 6px 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .log-item {
+            padding: 8px 12px;
+            border-bottom: 1px solid #eee;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        .log-error { color: #e74c3c; }
+        .log-warning { color: #f39c12; }
+        .log-info { color: #3498db; }
+        .log-debug { color: #6c757d; }
+        .log-timestamp {
+            color: #6c757d;
+            margin-right: 10px;
+        }
+        
+        /* 服務控制按鈕 */
+        .service-controls {
+            display: flex;
+            gap: 5px;
+            margin-top: 8px;
+        }
+        .control-btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 3px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .control-btn:hover {
+            transform: translateY(-1px);
+        }
+        .btn-restart { background: #3498db; color: white; }
+        .btn-stop { background: #e74c3c; color: white; }
+        .btn-start { background: #27ae60; color: white; }
+        .btn-terminate { background: #8e44ad; color: white; }
+        
+        /* 模態對話框樣式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .close {
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #6c757d;
+        }
+        .close:hover {
+            color: #495057;
+        }
+        .threshold-input {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .threshold-input input {
+            width: 80px;
+            padding: 6px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        
         /* 響應式優化 */
         @media (max-width: 768px) {
             body { padding: 15px; }
@@ -342,6 +559,9 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             }
             .virtual-item-details div {
                 padding: 2px 0;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
         }
     </style>
@@ -380,8 +600,52 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             <div id="filesystem-info" class="loading">載入中...</div>
         </div>
         
+        <div class="card">
+            <h3>❤️ 系統健康度</h3>
+            <div id="health-info" class="loading">載入中...</div>
+            <div id="health-chart" class="lazy-chart" data-chart="health">
+                <div class="chart-placeholder">點擊載入健康度趨勢圖表</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h3>🚨 即時警報</h3>
+            <div id="alerts-info" class="loading">載入中...</div>
+            <div class="alert-controls" style="margin-top: 15px;">
+                <button class="refresh-btn" onclick="showThresholdSettings()" style="font-size: 12px; padding: 6px 12px;">
+                    ⚙️ 閾值設定
+                </button>
+            </div>
+        </div>
+        
         <div class="card" style="grid-column: 1 / -1;">
-            <h3>🔧 服務監控 - 虛擬滾動</h3>
+            <h3>📋 即時日誌監控</h3>
+            <div class="log-controls" style="margin-bottom: 15px;">
+                <select id="log-level-filter" onchange="updateLogs()">
+                    <option value="">所有級別</option>
+                    <option value="ERROR">錯誤</option>
+                    <option value="WARNING">警告</option>
+                    <option value="INFO">資訊</option>
+                    <option value="DEBUG">除錯</option>
+                </select>
+                <select id="log-type-filter" onchange="updateLogs()">
+                    <option value="">所有類型</option>
+                    <option value="system">系統</option>
+                    <option value="auth">認證</option>
+                    <option value="kernel">核心</option>
+                    <option value="mail">郵件</option>
+                </select>
+                <button class="refresh-btn" onclick="updateLogs()">🔄 重新整理</button>
+            </div>
+            <div id="logs-container" class="virtual-scroll-container" style="height: 300px;">
+                <div id="logs-content" class="virtual-scroll-content">
+                    <div class="loading">載入日誌...</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card" style="grid-column: 1 / -1;">
+            <h3>🔧 服務監控與控制</h3>
             <div class="pagination-controls">
                 <label>
                     排序: 
@@ -408,14 +672,54 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
         </div>
     </div>
 
+    <!-- 閾值設定模態對話框 -->
+    <div id="threshold-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>⚙️ 警報閾值設定</h3>
+                <span class="close" onclick="closeThresholdModal()">&times;</span>
+            </div>
+            <div id="threshold-form">
+                <div class="threshold-input">
+                    <label>CPU 警告閾值 (%):</label>
+                    <input type="number" id="cpu-warning" min="0" max="100" value="70">
+                </div>
+                <div class="threshold-input">
+                    <label>CPU 嚴重閾值 (%):</label>
+                    <input type="number" id="cpu-critical" min="0" max="100" value="85">
+                </div>
+                <div class="threshold-input">
+                    <label>記憶體警告閾值 (%):</label>
+                    <input type="number" id="memory-warning" min="0" max="100" value="80">
+                </div>
+                <div class="threshold-input">
+                    <label>記憶體嚴重閾值 (%):</label>
+                    <input type="number" id="memory-critical" min="0" max="100" value="90">
+                </div>
+                <div class="threshold-input">
+                    <label>磁碟警告閾值 (%):</label>
+                    <input type="number" id="disk-warning" min="0" max="100" value="85">
+                </div>
+                <div class="threshold-input">
+                    <label>磁碟嚴重閾值 (%):</label>
+                    <input type="number" id="disk-critical" min="0" max="100" value="95">
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="refresh-btn" onclick="saveThresholds()">💾 儲存設定</button>
+                    <button class="refresh-btn" onclick="closeThresholdModal()" style="background: #6c757d; margin-left: 10px;">❌ 取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // 虛擬滾動實現
         class VirtualScrollList {
             constructor(container, options = {}) {
                 this.container = container;
                 this.content = container.querySelector('.virtual-scroll-content');
-                this.itemHeight = options.itemHeight || 50;
-                this.bufferSize = options.bufferSize || 5;
+                this.itemHeight = options.itemHeight || 110;
+                this.bufferSize = options.bufferSize || 3;
                 this.data = [];
                 this.visibleStart = 0;
                 this.visibleEnd = 0;
@@ -428,6 +732,9 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
             setData(data) {
                 this.data = data;
                 this.content.style.height = (data.length * this.itemHeight) + 'px';
+                // 清除所有現有項目
+                this.renderedItems.forEach(element => element.remove());
+                this.renderedItems.clear();
                 this.render();
             }
             
@@ -462,8 +769,11 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
                         const element = this.createItem(this.data[i], i);
                         element.style.position = 'absolute';
                         element.style.top = (i * this.itemHeight) + 'px';
-                        element.style.width = '100%';
+                        element.style.left = '0';
+                        element.style.right = '0';
+                        element.style.width = 'calc(100% - 2px)';
                         element.style.height = this.itemHeight + 'px';
+                        element.style.zIndex = '1';
                         
                         this.content.appendChild(element);
                         this.renderedItems.set(i, element);
@@ -612,7 +922,7 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
             const container = document.getElementById('services-virtual-container');
-            virtualScrollList = new VirtualScrollList(container, { itemHeight: 70 });
+            virtualScrollList = new VirtualScrollList(container, { itemHeight: 110 });
             lazyChartManager = new LazyChartManager();
             
             refreshAll();
@@ -638,6 +948,201 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
         }
         
         // 更新函數
+        // 新功能函數
+        async function updateHealthInfo() {
+            const data = await fetchData('/api/health');
+            const container = document.getElementById('health-info');
+            
+            if (data.error) {
+                container.innerHTML = `<div style="color: #e74c3c;">錯誤: ${data.error}</div>`;
+                return;
+            }
+            
+            const overallScore = data.overall || 0;
+            let healthClass = 'health-critical';
+            let healthText = '危險';
+            
+            if (overallScore >= 80) {
+                healthClass = 'health-excellent';
+                healthText = '優秀';
+            } else if (overallScore >= 60) {
+                healthClass = 'health-good';
+                healthText = '良好';
+            } else if (overallScore >= 40) {
+                healthClass = 'health-warning';
+                healthText = '警告';
+            }
+            
+            container.innerHTML = `
+                <div class="health-score">
+                    <div class="health-circle ${healthClass}">
+                        ${overallScore.toFixed(0)}
+                    </div>
+                    <div class="health-details">
+                        <div style="font-weight: 600; margin-bottom: 8px;">整體健康度: ${healthText}</div>
+                        <div class="health-metric">
+                            <span>CPU 評分:</span><span>${data.cpu?.toFixed(1) || 'N/A'}</span>
+                        </div>
+                        <div class="health-metric">
+                            <span>記憶體評分:</span><span>${data.memory?.toFixed(1) || 'N/A'}</span>
+                        </div>
+                        <div class="health-metric">
+                            <span>磁碟評分:</span><span>${data.disk?.toFixed(1) || 'N/A'}</span>
+                        </div>
+                        <div class="health-metric">
+                            <span>進程評分:</span><span>${data.process?.toFixed(1) || 'N/A'}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        async function updateAlertsInfo() {
+            const data = await fetchData('/api/alerts');
+            const container = document.getElementById('alerts-info');
+            
+            if (data.error) {
+                container.innerHTML = `<div style="color: #e74c3c;">錯誤: ${data.error}</div>`;
+                return;
+            }
+            
+            const currentAlerts = data.current_alerts || [];
+            const alertCount = data.alert_count || 0;
+            
+            if (alertCount === 0) {
+                container.innerHTML = `
+                    <div style="color: #27ae60; text-align: center; padding: 20px;">
+                        ✅ 系統運行正常<br>
+                        <small>無活躍警報</small>
+                    </div>
+                `;
+                return;
+            }
+            
+            let alertsHtml = `<div style="margin-bottom: 10px; font-weight: 600;">活躍警報 (${alertCount})</div>`;
+            
+            currentAlerts.forEach(alert => {
+                const alertClass = alert.severity === 'critical' ? 'alert-critical' : 'alert-warning';
+                const timestamp = new Date(alert.timestamp).toLocaleTimeString();
+                
+                alertsHtml += `
+                    <div class="alert-item ${alertClass}">
+                        <div class="alert-title">${alert.title}</div>
+                        <div>${alert.description}</div>
+                        <div class="alert-time">${timestamp}</div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = alertsHtml;
+        }
+        
+        let logsVirtualList;
+        
+        async function updateLogs() {
+            const levelFilter = document.getElementById('log-level-filter').value;
+            const typeFilter = document.getElementById('log-type-filter').value;
+            
+            const params = new URLSearchParams({
+                action: 'recent',
+                count: 100
+            });
+            
+            if (levelFilter) params.append('level', levelFilter);
+            if (typeFilter) params.append('type', typeFilter);
+            
+            const data = await fetchData(`/api/logs?${params}`);
+            
+            if (data.error) {
+                document.getElementById('logs-content').innerHTML = 
+                    `<div style="color: #e74c3c; padding: 20px;">錯誤: ${data.error}</div>`;
+                return;
+            }
+            
+            if (!logsVirtualList) {
+                const container = document.getElementById('logs-container');
+                logsVirtualList = new VirtualScrollList(container, { 
+                    itemHeight: 50,
+                    createItem: (log, index) => createLogItem(log, index)
+                });
+            }
+            
+            logsVirtualList.setData(data.logs || []);
+        }
+        
+        function createLogItem(log, index) {
+            const div = document.createElement('div');
+            div.className = `log-item log-${log.level.toLowerCase()}`;
+            
+            const timestamp = log.original_timestamp || new Date(log.timestamp).toLocaleTimeString();
+            
+            div.innerHTML = `
+                <span class="log-timestamp">[${timestamp}]</span>
+                <span class="log-type">[${log.log_type}]</span>
+                <span class="log-level">[${log.level}]</span>
+                <span class="log-message">${log.message}</span>
+            `;
+            
+            return div;
+        }
+        
+        function showThresholdSettings() {
+            document.getElementById('threshold-modal').style.display = 'block';
+            loadCurrentThresholds();
+        }
+        
+        function closeThresholdModal() {
+            document.getElementById('threshold-modal').style.display = 'none';
+        }
+        
+        async function loadCurrentThresholds() {
+            try {
+                const data = await fetchData('/api/thresholds');
+                const thresholds = data.thresholds || {};
+                
+                document.getElementById('cpu-warning').value = thresholds.cpu_warning || 70;
+                document.getElementById('cpu-critical').value = thresholds.cpu_critical || 85;
+                document.getElementById('memory-warning').value = thresholds.memory_warning || 80;
+                document.getElementById('memory-critical').value = thresholds.memory_critical || 90;
+                document.getElementById('disk-warning').value = thresholds.disk_warning || 85;
+                document.getElementById('disk-critical').value = thresholds.disk_critical || 95;
+            } catch (error) {
+                console.error('載入閾值設定失敗:', error);
+            }
+        }
+        
+        async function saveThresholds() {
+            const thresholds = {
+                cpu_warning: parseFloat(document.getElementById('cpu-warning').value),
+                cpu_critical: parseFloat(document.getElementById('cpu-critical').value),
+                memory_warning: parseFloat(document.getElementById('memory-warning').value),
+                memory_critical: parseFloat(document.getElementById('memory-critical').value),
+                disk_warning: parseFloat(document.getElementById('disk-warning').value),
+                disk_critical: parseFloat(document.getElementById('disk-critical').value)
+            };
+            
+            try {
+                const response = await fetch('/api/thresholds', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ thresholds })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('閾值設定已儲存');
+                    closeThresholdModal();
+                } else {
+                    alert('儲存失敗: ' + (result.error || result.message));
+                }
+            } catch (error) {
+                alert('儲存失敗: ' + error.message);
+            }
+        }
+        
         async function updateSystemInfo() {
             const data = await fetchData('/api/system');
             const container = document.getElementById('system-info');
@@ -761,6 +1266,9 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
                 updateProcessInfo(),
                 updateNetworkInfo(),
                 updateFilesystemInfo(),
+                updateHealthInfo(),
+                updateAlertsInfo(),
+                updateLogs(),
                 updateServicesInfo()
             ]);
         }
@@ -917,25 +1425,246 @@ class OptimizedMCPWebHandler(BaseHTTPRequestHandler):
                 
         except Exception as e:
             self.send_error(500, f"Internal server error: {str(e)}")
+    
+    def serve_trend_data(self, query, supports_gzip=False):
+        """提供趨勢數據"""
+        try:
+            from mcp_servers.mcp_history_manager import get_history_manager
+            history_manager = get_history_manager()
+            
+            metric_type = query.get('type', ['system'])[0]
+            hours = int(query.get('hours', ['24'])[0])
+            
+            data = history_manager.get_trend_data(metric_type, hours)
+            self.send_json_response({'trends': data}, supports_gzip)
+            
+        except Exception as e:
+            self.send_json_response({'error': str(e)}, supports_gzip)
+    
+    def serve_health_score(self, supports_gzip=False):
+        """提供健康度評分"""
+        try:
+            from mcp_servers.mcp_history_manager import get_history_manager
+            history_manager = get_history_manager()
+            
+            health_score = history_manager.get_current_health_score()
+            self.send_json_response(health_score, supports_gzip)
+            
+        except Exception as e:
+            self.send_json_response({'error': str(e)}, supports_gzip)
+    
+    def serve_alerts(self, supports_gzip=False):
+        """提供警報資訊"""
+        try:
+            from mcp_servers.mcp_service_controller import get_service_controller
+            from mcp_servers.mcp_history_manager import get_history_manager
+            
+            service_controller = get_service_controller()
+            history_manager = get_history_manager()
+            
+            current_alerts = service_controller.get_current_alerts()
+            recent_alerts = history_manager.get_recent_alerts(24)
+            
+            data = {
+                'current_alerts': current_alerts,
+                'recent_alerts': recent_alerts,
+                'alert_count': len(current_alerts)
+            }
+            
+            self.send_json_response(data, supports_gzip)
+            
+        except Exception as e:
+            self.send_json_response({'error': str(e)}, supports_gzip)
+    
+    def serve_logs(self, query, supports_gzip=False):
+        """提供日誌資訊"""
+        try:
+            from mcp_servers.mcp_log_monitor import get_log_monitor
+            log_monitor = get_log_monitor()
+            
+            action = query.get('action', ['recent'])[0]
+            
+            if action == 'recent':
+                count = int(query.get('count', ['100'])[0])
+                level_filter = query.get('level', [None])[0]
+                log_type_filter = query.get('type', [None])[0]
+                
+                logs = log_monitor.get_recent_logs(count, level_filter, log_type_filter)
+                data = {'logs': logs}
+                
+            elif action == 'search':
+                search_query = query.get('q', [''])[0]
+                log_type = query.get('type', [None])[0]
+                hours = int(query.get('hours', ['24'])[0])
+                
+                logs = log_monitor.search_logs(search_query, log_type, hours)
+                data = {'logs': logs}
+                
+            elif action == 'stats':
+                stats = log_monitor.get_log_stats()
+                error_analysis = log_monitor.analyze_error_patterns(24)
+                data = {'stats': stats, 'error_analysis': error_analysis}
+                
+            elif action == 'tail':
+                log_type = query.get('type', ['system'])[0]
+                lines = int(query.get('lines', ['50'])[0])
+                
+                tail_lines = log_monitor.get_log_tail(log_type, lines)
+                data = {'tail': tail_lines, 'log_type': log_type}
+                
+            else:
+                data = {'error': 'Invalid action'}
+            
+            self.send_json_response(data, supports_gzip)
+            
+        except Exception as e:
+            self.send_json_response({'error': str(e)}, supports_gzip)
+    
+    def serve_service_control(self, query, supports_gzip=False):
+        """提供服務控制資訊"""
+        try:
+            from mcp_servers.mcp_service_controller import get_service_controller
+            service_controller = get_service_controller()
+            
+            action = query.get('action', ['list'])[0]
+            
+            if action == 'list':
+                services = service_controller.get_systemd_services()
+                data = {'services': services}
+            elif action == 'info':
+                pid = int(query.get('pid', ['0'])[0])
+                info = service_controller.get_service_info(pid)
+                data = {'service_info': info}
+            else:
+                data = {'error': 'Invalid action'}
+            
+            self.send_json_response(data, supports_gzip)
+            
+        except Exception as e:
+            self.send_json_response({'error': str(e)}, supports_gzip)
+    
+    def serve_thresholds(self, supports_gzip=False):
+        """提供警報閾值設定"""
+        try:
+            from mcp_servers.mcp_service_controller import get_service_controller
+            service_controller = get_service_controller()
+            
+            thresholds = service_controller.get_alert_thresholds()
+            self.send_json_response({'thresholds': thresholds}, supports_gzip)
+            
+        except Exception as e:
+            self.send_json_response({'error': str(e)}, supports_gzip)
+    
+    def handle_service_control(self, request_data, supports_gzip=False):
+        """處理服務控制請求"""
+        try:
+            from mcp_servers.mcp_service_controller import get_service_controller
+            service_controller = get_service_controller()
+            
+            action = request_data.get('action')
+            
+            if action == 'terminate':
+                pid = request_data.get('pid')
+                force = request_data.get('force', False)
+                success, message = service_controller.terminate_service(pid, force)
+                
+            elif action == 'restart':
+                service_name = request_data.get('service_name')
+                success, message = service_controller.restart_systemd_service(service_name)
+                
+            elif action == 'start':
+                service_name = request_data.get('service_name')
+                success, message = service_controller.start_systemd_service(service_name)
+                
+            elif action == 'stop':
+                service_name = request_data.get('service_name')
+                success, message = service_controller.stop_systemd_service(service_name)
+                
+            else:
+                success = False
+                message = "Invalid action"
+            
+            self.send_json_response({
+                'success': success,
+                'message': message
+            }, supports_gzip)
+            
+        except Exception as e:
+            self.send_json_response({
+                'success': False,
+                'error': str(e)
+            }, supports_gzip)
+    
+    def handle_threshold_update(self, request_data, supports_gzip=False):
+        """處理閾值更新請求"""
+        try:
+            from mcp_servers.mcp_service_controller import get_service_controller
+            service_controller = get_service_controller()
+            
+            thresholds = request_data.get('thresholds', {})
+            success = service_controller.update_alert_thresholds(thresholds)
+            
+            self.send_json_response({
+                'success': success,
+                'message': '閾值更新成功' if success else '閾值更新失敗'
+            }, supports_gzip)
+            
+        except Exception as e:
+            self.send_json_response({
+                'success': False,
+                'error': str(e)
+            }, supports_gzip)
 
 def run_optimized_server(port=8080):
     """運行優化的 MCP Web 伺服器"""
+    # 啟動增強功能
+    try:
+        from mcp_servers.mcp_history_manager import start_history_collection
+        from mcp_servers.mcp_service_controller import start_service_monitoring  
+        from mcp_servers.mcp_log_monitor import start_log_monitoring
+        
+        start_history_collection()
+        start_service_monitoring()
+        start_log_monitoring(['system', 'auth'])
+        print("✅ 增強功能已啟動 (歷史數據、警報系統、日誌監控)")
+        
+    except Exception as e:
+        print(f"⚠️  啟動增強功能時發生錯誤: {e}")
+        print("   基本監控功能仍可正常使用")
+    
     server_address = ('', port)
     httpd = HTTPServer(server_address, OptimizedMCPWebHandler)
     
-    print(f"🚀 MCP 監控系統 Web 伺服器已啟動 (優化版)")
+    print(f"🚀 MCP 監控系統 Web 伺服器已啟動 (增強版)")
     print(f"📡 伺服器位址: http://localhost:{port}")
     print(f"🌐 功能特色:")
     print(f"   • 虛擬滾動技術處理大量數據")
-    print(f"   • 懶載入圖表組件")
+    print(f"   • 懶載入圖表組件") 
     print(f"   • Gzip 壓縮優化")
     print(f"   • 響應式設計")
+    print(f"   • 📊 歷史趨勢分析")
+    print(f"   • ❤️  系統健康度評分")
+    print(f"   • 🚨 即時警報系統")
+    print(f"   • 🔧 服務啟停控制")
+    print(f"   • 📋 即時日誌監控")
     print(f"💡 按 Ctrl+C 停止伺服器")
     
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
-        print("\n✅ 伺服器已停止")
+        print("\n🛑 正在停止伺服器...")
+        try:
+            from mcp_servers.mcp_history_manager import stop_history_collection
+            from mcp_servers.mcp_service_controller import stop_service_monitoring
+            from mcp_servers.mcp_log_monitor import stop_log_monitoring
+            
+            stop_history_collection()
+            stop_service_monitoring() 
+            stop_log_monitoring()
+            print("✅ 增強功能已停止")
+        except:
+            pass
+        print("✅ 伺服器已停止")
         httpd.server_close()
 
 if __name__ == "__main__":
