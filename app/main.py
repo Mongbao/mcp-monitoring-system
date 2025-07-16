@@ -14,7 +14,7 @@ from fastapi.responses import HTMLResponse
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from app.config import settings
-from app.api.routes import system, processes, network, logs, services, health, filesystem
+from app.api.routes import system, processes, network, logs, services, health, filesystem, discord, schedule
 
 # 創建 FastAPI 應用程式
 app = FastAPI(
@@ -50,6 +50,8 @@ app.include_router(logs.router, prefix="/api", tags=["日誌監控"])
 app.include_router(services.router, prefix="/api", tags=["服務監控"])
 app.include_router(health.router, prefix="/api", tags=["健康檢查"])
 app.include_router(filesystem.router, prefix="/api", tags=["檔案系統監控"])
+app.include_router(discord.router, prefix="/api/discord", tags=["Discord 監控"])
+app.include_router(schedule.router, prefix="/api/schedule", tags=["排程管理"])
 
 @app.get("/", response_class=HTMLResponse)
 async def dashboard(request: Request):
@@ -68,11 +70,21 @@ async def startup_event():
     print(f"📍 伺服器地址: http://{settings.HOST}:{settings.PORT}")
     print(f"📁 靜態檔案目錄: {settings.STATIC_DIR}")
     print(f"🔧 除錯模式: {settings.DEBUG}")
+    
+    # 啟動 Discord 排程器
+    from app.core.scheduler import scheduler
+    scheduler.start()
+    print("📅 Discord 排程器已啟動")
 
 @app.on_event("shutdown")
 async def shutdown_event():
     """應用程式關閉事件"""
     print(f"👋 {settings.APP_NAME} 關閉中...")
+    
+    # 停止 Discord 排程器
+    from app.core.scheduler import scheduler
+    scheduler.stop()
+    print("📅 Discord 排程器已停止")
 
 if __name__ == "__main__":
     import uvicorn

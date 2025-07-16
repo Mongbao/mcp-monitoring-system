@@ -640,13 +640,15 @@
             background-color: rgba(0,0,0,0.5);
         }
         .modal-content {
-            background-color: white;
+            background: var(--card-bg);
             margin: 10% auto;
             padding: 20px;
             border-radius: 8px;
             width: 80%;
             max-width: 500px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
         }
         .modal-header {
             display: flex;
@@ -949,7 +951,7 @@
         }
         
         .modal-content {
-            background: white;
+            background: var(--card-bg);
             border-radius: 16px;
             padding: 24px;
             max-width: 600px;
@@ -959,6 +961,8 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.15);
             transform: scale(0.9);
             transition: transform 0.3s ease;
+            color: var(--text-color);
+            border: 1px solid var(--card-border);
         }
         
         .modal-overlay.active .modal-content {
@@ -971,13 +975,13 @@
             align-items: center;
             margin-bottom: 20px;
             padding-bottom: 15px;
-            border-bottom: 2px solid #f1f3f4;
+            border-bottom: 2px solid var(--border-color);
         }
         
         .modal-title {
             font-size: 1.5rem;
             font-weight: 700;
-            color: #2c3e50;
+            color: var(--text-color);
             margin: 0;
         }
         
@@ -986,15 +990,15 @@
             border: none;
             font-size: 24px;
             cursor: pointer;
-            color: #6c757d;
+            color: var(--text-light);
             padding: 5px;
             border-radius: 50%;
             transition: all 0.2s ease;
         }
         
         .modal-close:hover {
-            background: #f8f9fa;
-            color: #495057;
+            background: var(--metric-hover);
+            color: var(--text-color);
         }
         
         .service-detail-section {
@@ -1002,7 +1006,7 @@
         }
         
         .service-detail-section h4 {
-            color: #495057;
+            color: var(--text-color);
             margin-bottom: 10px;
             font-size: 1.1rem;
             font-weight: 600;
@@ -1242,6 +1246,234 @@
             100% { transform: rotate(360deg); }
         }
         
+        /* Discord 模態框樣式 */
+        .modal-body {
+            padding: 20px 0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+            background: var(--metric-bg);
+            color: var(--text-color);
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+        
+        .form-group input[type="checkbox"] {
+            margin-right: 8px;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        .btn-primary {
+            background: var(--accent-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+        
+        .btn-secondary {
+            background: var(--border-color);
+            color: var(--text-color);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--metric-border);
+        }
+        
+        /* 排程設定樣式 */
+        .schedule-section {
+            margin-bottom: 30px;
+        }
+        
+        .schedule-section h4 {
+            margin-bottom: 15px;
+            color: var(--text-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .form-group input[type="text"],
+        .form-group input[type="time"],
+        .form-group input[type="number"],
+        .form-group select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            background: var(--metric-bg);
+            color: var(--text-color);
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 8px;
+        }
+        
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 6px;
+        }
+        
+        .schedule-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--metric-bg);
+        }
+        
+        .schedule-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .schedule-item-name {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        .schedule-item-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .schedule-item-status.active {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .schedule-item-status.paused {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .schedule-item-status.inactive {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .schedule-item-details {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+        
+        .schedule-item-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .schedule-item-actions button {
+            padding: 4px 8px;
+            font-size: 11px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .btn-execute {
+            background: var(--accent-color);
+            color: white;
+        }
+        
+        .btn-execute:hover {
+            background: var(--accent-hover);
+        }
+        
+        .btn-pause {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .btn-pause:hover {
+            background: #e67e22;
+        }
+        
+        .btn-resume {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-resume:hover {
+            background: #229954;
+        }
+        
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-delete:hover {
+            background: #c0392b;
+        }
+        
         /* 響應式調整 */
         @media (max-width: 768px) {
             .modal-content {
@@ -1327,6 +1559,27 @@
             </div>
         </div>
         
+        <div class="card">
+            <h3>🤖 Discord 監控</h3>
+            <div id="discord-info" class="loading">載入中...</div>
+            <div class="discord-controls" style="margin-top: 15px;">
+                <button class="refresh-btn" onclick="sendDiscordReport()" style="font-size: 12px; padding: 6px 12px; margin-right: 10px;">
+                    📤 發送報告
+                </button>
+                <button class="refresh-btn" onclick="showDiscordMessageModal()" style="font-size: 12px; padding: 6px 12px; margin-right: 10px;">
+                    💬 發送訊息
+                </button>
+                <button class="refresh-btn" onclick="showScheduleModal()" style="font-size: 12px; padding: 6px 12px;">
+                    📅 排程設定
+                </button>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h3>📅 排程概覽</h3>
+            <div id="schedule-overview" class="loading">載入中...</div>
+        </div>
+
         <div class="card">
             <h3>🚨 即時警報</h3>
             <div id="alerts-info" class="loading">載入中...</div>
@@ -1850,6 +2103,9 @@
             lazyChartManager = new LazyChartManager();
             window.lazyChartManager = lazyChartManager;
             
+            // 設置排程表單處理器
+            setupScheduleFormHandler();
+            
             refreshAll();
             
             // 每30秒自動刷新
@@ -2342,6 +2598,476 @@
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
         
+        async function updateDiscordInfo() {
+            const container = document.getElementById('discord-info');
+            container.className = '';
+            
+            const data = await fetchData('/api/discord/');
+            
+            if (data.error) {
+                container.innerHTML = `<div style="color: #e74c3c;">錯誤: ${data.error}</div>`;
+                return;
+            }
+            
+            // data 已經是實際的數據，不需要再訪問 data.data
+            const status = data.discord_status;
+            const messages = data.recent_messages;
+            
+            let statusColor = '#e74c3c';
+            let statusText = '未連接';
+            
+            if (status.status === 'connected') {
+                statusColor = '#27ae60';
+                statusText = '已連接';
+            } else if (status.status === 'error') {
+                statusColor = '#f39c12';
+                statusText = '連接錯誤';
+            }
+            
+            container.innerHTML = `
+                <div class="metric">
+                    <span class="metric-label">連接狀態:</span>
+                    <span class="metric-value" style="color: ${statusColor};">
+                        ${statusText}
+                    </span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">伺服器:</span>
+                    <span class="metric-value">${status.guild_name || 'N/A'}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">頻道:</span>
+                    <span class="metric-value">${status.channel_name || 'N/A'}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">最近訊息:</span>
+                    <span class="metric-value">${messages.count || 0} 條</span>
+                </div>
+                ${status.last_sent_time ? `
+                <div class="metric">
+                    <span class="metric-label">最後發送:</span>
+                    <span class="metric-value">${new Date(status.last_sent_time).toLocaleString()}</span>
+                </div>
+                ` : ''}
+                ${status.error ? `
+                <div class="metric">
+                    <span class="metric-label">錯誤:</span>
+                    <span class="metric-value" style="color: #e74c3c; font-size: 11px;">
+                        ${status.error}
+                    </span>
+                </div>
+                ` : ''}
+            `;
+        }
+        
+        async function sendDiscordReport() {
+            try {
+                const response = await fetch('/api/discord/send-report', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        format: 'detailed',
+                        include_charts: false
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('成功', '系統報告已發送到 Discord', 'success');
+                    updateDiscordInfo(); // 更新 Discord 狀態
+                } else {
+                    showNotification('錯誤', result.message || '發送失敗', 'error');
+                }
+            } catch (error) {
+                showNotification('錯誤', `發送失敗: ${error.message}`, 'error');
+            }
+        }
+        
+        function showDiscordMessageModal() {
+            const modal = document.getElementById('discord-message-modal');
+            modal.classList.add('active');
+            
+            // 清空表單
+            document.getElementById('discord-message-text').value = '';
+            document.getElementById('discord-message-urgent').checked = false;
+            
+            // 聚焦到文本框
+            setTimeout(() => {
+                document.getElementById('discord-message-text').focus();
+            }, 300);
+        }
+        
+        function closeDiscordMessageModal(event) {
+            const modal = document.getElementById('discord-message-modal');
+            if (event && event.target !== modal) return;
+            modal.classList.remove('active');
+        }
+        
+        async function sendDiscordMessage() {
+            const messageText = document.getElementById('discord-message-text').value.trim();
+            const isUrgent = document.getElementById('discord-message-urgent').checked;
+            
+            if (!messageText) {
+                showNotification('警告', '請輸入訊息內容', 'warning');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/discord/send-message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: messageText,
+                        urgent: isUrgent
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('成功', '訊息已發送到 Discord', 'success');
+                    closeDiscordMessageModal();
+                    updateDiscordInfo(); // 更新 Discord 狀態
+                } else {
+                    showNotification('錯誤', result.message || '發送失敗', 'error');
+                }
+            } catch (error) {
+                showNotification('錯誤', `發送失敗: ${error.message}`, 'error');
+            }
+        }
+        
+        // 排程管理相關函數
+        async function updateScheduleOverview() {
+            const container = document.getElementById('schedule-overview');
+            container.className = '';
+            
+            try {
+                const data = await fetchData('/api/schedule/status/overview');
+                
+                if (data.error) {
+                    container.innerHTML = `<div style="color: #e74c3c;">錯誤: ${data.error}</div>`;
+                    return;
+                }
+                
+                container.innerHTML = `
+                    <div class="metric">
+                        <span class="metric-label">總排程數:</span>
+                        <span class="metric-value">${data.total_schedules}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">活動排程:</span>
+                        <span class="metric-value" style="color: #27ae60;">${data.active_schedules}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">暫停排程:</span>
+                        <span class="metric-value" style="color: #f39c12;">${data.paused_schedules}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">排程器狀態:</span>
+                        <span class="metric-value" style="color: ${data.scheduler_running ? '#27ae60' : '#e74c3c'};">
+                            ${data.scheduler_running ? '運行中' : '已停止'}
+                        </span>
+                    </div>
+                    ${data.next_executions && data.next_executions.length > 0 ? `
+                    <div class="metric">
+                        <span class="metric-label">下次執行:</span>
+                        <span class="metric-value" style="font-size: 12px;">
+                            ${data.next_executions[0].schedule_name}<br>
+                            <small>${new Date(data.next_executions[0].next_run).toLocaleString()}</small>
+                        </span>
+                    </div>
+                    ` : ''}
+                `;
+            } catch (error) {
+                container.innerHTML = `<div style="color: #e74c3c;">載入失敗: ${error.message}</div>`;
+            }
+        }
+        
+        function showScheduleModal() {
+            const modal = document.getElementById('schedule-modal');
+            modal.classList.add('active');
+            
+            // 顯示排程列表，隱藏表單
+            document.getElementById('schedule-list').style.display = 'block';
+            document.getElementById('schedule-form').style.display = 'none';
+            
+            // 設置表單處理器
+            setupScheduleFormHandler();
+            
+            // 載入排程列表
+            loadSchedules();
+        }
+        
+        function closeScheduleModal(event) {
+            const modal = document.getElementById('schedule-modal');
+            if (event && event.target !== modal) return;
+            modal.classList.remove('active');
+        }
+        
+        async function loadSchedules() {
+            const container = document.getElementById('schedule-items');
+            container.innerHTML = '<div class="loading">載入中...</div>';
+            
+            try {
+                const data = await fetchData('/api/schedule/');
+                
+                if (data.error) {
+                    container.innerHTML = `<div style="color: #e74c3c;">錯誤: ${data.error}</div>`;
+                    return;
+                }
+                
+                if (data.length === 0) {
+                    container.innerHTML = '<div style="text-align: center; color: var(--text-light);">尚無排程</div>';
+                    return;
+                }
+                
+                container.innerHTML = data.map(schedule => `
+                    <div class="schedule-item">
+                        <div class="schedule-item-header">
+                            <span class="schedule-item-name">${schedule.name}</span>
+                            <span class="schedule-item-status ${schedule.status}">${getStatusText(schedule.status)}</span>
+                        </div>
+                        <div class="schedule-item-details">
+                            ${schedule.description || '無描述'}<br>
+                            類型: ${getTypeText(schedule.type)} | 時間: ${schedule.time}
+                            ${schedule.next_run ? `<br>下次執行: ${new Date(schedule.next_run).toLocaleString()}` : ''}
+                            ${schedule.last_run ? `<br>上次執行: ${new Date(schedule.last_run).toLocaleString()}` : ''}
+                        </div>
+                        <div class="schedule-item-actions">
+                            <button class="btn-execute" onclick="executeSchedule('${schedule.id}')">▶️ 執行</button>
+                            ${schedule.status === 'active' ? 
+                                `<button class="btn-pause" onclick="pauseSchedule('${schedule.id}')">⏸️ 暫停</button>` :
+                                `<button class="btn-resume" onclick="resumeSchedule('${schedule.id}')">▶️ 恢復</button>`
+                            }
+                            <button class="btn-delete" onclick="deleteSchedule('${schedule.id}')">🗑️ 刪除</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                container.innerHTML = `<div style="color: #e74c3c;">載入失敗: ${error.message}</div>`;
+            }
+        }
+        
+        function getStatusText(status) {
+            const statusMap = {
+                'active': '活動',
+                'paused': '暫停',
+                'inactive': '停用'
+            };
+            return statusMap[status] || status;
+        }
+        
+        function getTypeText(type) {
+            const typeMap = {
+                'daily': '每日',
+                'weekly': '每週',
+                'hourly': '每小時'
+            };
+            return typeMap[type] || type;
+        }
+        
+        function showCreateScheduleForm() {
+            document.getElementById('schedule-list').style.display = 'none';
+            document.getElementById('schedule-form').style.display = 'block';
+            document.getElementById('schedule-form-title').textContent = '新增排程';
+            
+            // 清空表單
+            document.getElementById('schedule-form-element').reset();
+            
+            // 設定預設值
+            document.getElementById('schedule-time').value = '09:00';
+            document.getElementById('include-system').checked = true;
+            document.getElementById('include-process').checked = true;
+            document.getElementById('include-network').checked = true;
+            document.getElementById('include-alerts').checked = true;
+            
+            updateScheduleForm();
+        }
+        
+        function updateScheduleForm() {
+            const type = document.getElementById('schedule-type').value;
+            const weekdaysGroup = document.getElementById('schedule-weekdays-group');
+            const intervalGroup = document.getElementById('schedule-interval-group');
+            
+            // 隱藏所有特殊選項
+            weekdaysGroup.style.display = 'none';
+            intervalGroup.style.display = 'none';
+            
+            // 根據類型顯示相應選項
+            if (type === 'weekly') {
+                weekdaysGroup.style.display = 'block';
+            } else if (type === 'hourly') {
+                intervalGroup.style.display = 'block';
+            }
+        }
+        
+        function cancelScheduleForm() {
+            document.getElementById('schedule-form').style.display = 'none';
+            document.getElementById('schedule-list').style.display = 'block';
+        }
+        
+        // 表單提交處理
+        let formHandlerAttached = false;
+        
+        function setupScheduleFormHandler() {
+            if (formHandlerAttached) return;
+            
+            const form = document.getElementById('schedule-form-element');
+            if (!form) return;
+            
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                console.log('排程表單提交開始');
+                
+                const formData = {
+                name: document.getElementById('schedule-name').value,
+                description: document.getElementById('schedule-description').value || null,
+                type: document.getElementById('schedule-type').value,
+                time: document.getElementById('schedule-time').value,
+                include_system_info: document.getElementById('include-system').checked,
+                include_process_info: document.getElementById('include-process').checked,
+                include_network_info: document.getElementById('include-network').checked,
+                include_alerts: document.getElementById('include-alerts').checked,
+                custom_message: document.getElementById('schedule-custom-message').value || null
+            };
+            
+            // 根據類型添加特殊字段
+            if (formData.type === 'weekly') {
+                const weekdays = [];
+                document.querySelectorAll('#schedule-weekdays-group input[type="checkbox"]:checked').forEach(cb => {
+                    weekdays.push(cb.value);
+                });
+                if (weekdays.length === 0) {
+                    showNotification('錯誤', '請至少選擇一個執行日期', 'error');
+                    return;
+                }
+                formData.weekdays = weekdays;
+            } else if (formData.type === 'hourly') {
+                const interval = parseInt(document.getElementById('schedule-interval').value);
+                if (!interval || interval < 1 || interval > 168) {
+                    showNotification('錯誤', '間隔時間必須在 1-168 小時之間', 'error');
+                    return;
+                }
+                formData.interval_hours = interval;
+            }
+            
+            console.log('發送排程數據:', formData);
+            
+            try {
+                const response = await fetch('/api/schedule/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                console.log('排程建立回應:', result);
+                
+                if (result.success) {
+                    showNotification('成功', '排程建立成功', 'success');
+                    cancelScheduleForm();
+                    loadSchedules();
+                    updateScheduleOverview();
+                } else {
+                    showNotification('錯誤', result.message || '建立失敗', 'error');
+                }
+            } catch (error) {
+                showNotification('錯誤', `建立失敗: ${error.message}`, 'error');
+            }
+        });
+        
+        formHandlerAttached = true;
+        }
+        
+        async function executeSchedule(scheduleId) {
+            try {
+                const response = await fetch(`/api/schedule/${scheduleId}/execute`, {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('成功', '排程已開始執行', 'success');
+                } else {
+                    showNotification('錯誤', result.message || '執行失敗', 'error');
+                }
+            } catch (error) {
+                showNotification('錯誤', `執行失敗: ${error.message}`, 'error');
+            }
+        }
+        
+        async function pauseSchedule(scheduleId) {
+            try {
+                const response = await fetch(`/api/schedule/${scheduleId}/pause`, {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('成功', '排程已暫停', 'success');
+                    loadSchedules();
+                    updateScheduleOverview();
+                } else {
+                    showNotification('錯誤', result.message || '暫停失敗', 'error');
+                }
+            } catch (error) {
+                showNotification('錯誤', `暫停失敗: ${error.message}`, 'error');
+            }
+        }
+        
+        async function resumeSchedule(scheduleId) {
+            try {
+                const response = await fetch(`/api/schedule/${scheduleId}/resume`, {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('成功', '排程已恢復', 'success');
+                    loadSchedules();
+                    updateScheduleOverview();
+                } else {
+                    showNotification('錯誤', result.message || '恢復失敗', 'error');
+                }
+            } catch (error) {
+                showNotification('錯誤', `恢復失敗: ${error.message}`, 'error');
+            }
+        }
+        
+        async function deleteSchedule(scheduleId) {
+            if (!confirm('確定要刪除這個排程嗎？')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/schedule/${scheduleId}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('成功', '排程已刪除', 'success');
+                    loadSchedules();
+                    updateScheduleOverview();
+                } else {
+                    showNotification('錯誤', result.message || '刪除失敗', 'error');
+                }
+            } catch (error) {
+                showNotification('錯誤', `刪除失敗: ${error.message}`, 'error');
+            }
+        }
+        
         async function refreshAll() {
             console.log('刷新所有數據...');
             
@@ -2351,7 +3077,9 @@
                 updateProcessInfo(),
                 updateNetworkInfo(),
                 updateFilesystemInfo(),
-                updateServicesInfo()
+                updateServicesInfo(),
+                updateDiscordInfo(),
+                updateScheduleOverview()
             ];
             
             // 增強功能（允許失敗）
@@ -2420,6 +3148,131 @@
             </div>
             <div id="modal-service-content">
                 <!-- 服務詳細資訊將在這裡動態載入 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Discord 訊息模態框 -->
+    <div id="discord-message-modal" class="modal-overlay" onclick="closeDiscordMessageModal(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">💬 發送 Discord 訊息</h3>
+                <button class="modal-close" onclick="closeDiscordMessageModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="discord-message-text">訊息內容:</label>
+                    <textarea id="discord-message-text" rows="4" placeholder="請輸入要發送到 Discord 的訊息..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="discord-message-urgent"> 緊急訊息
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="sendDiscordMessage()">
+                        📤 發送訊息
+                    </button>
+                    <button class="btn btn-secondary" onclick="closeDiscordMessageModal()">
+                        取消
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 排程設定模態框 -->
+    <div id="schedule-modal" class="modal-overlay" onclick="closeScheduleModal(event)">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3 class="modal-title">📅 Discord 報告排程設定</h3>
+                <button class="modal-close" onclick="closeScheduleModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- 排程列表 -->
+                <div id="schedule-list" class="schedule-section">
+                    <h4>現有排程</h4>
+                    <div id="schedule-items">
+                        <div class="loading">載入中...</div>
+                    </div>
+                    <button class="btn btn-primary" onclick="showCreateScheduleForm()" style="margin-top: 10px;">
+                        ➕ 新增排程
+                    </button>
+                </div>
+                
+                <!-- 新增/編輯排程表單 -->
+                <div id="schedule-form" class="schedule-section" style="display: none;">
+                    <h4 id="schedule-form-title">新增排程</h4>
+                    <form id="schedule-form-element">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="schedule-name">排程名稱:</label>
+                                <input type="text" id="schedule-name" required maxlength="100" placeholder="例如：每日系統報告">
+                            </div>
+                            <div class="form-group">
+                                <label for="schedule-type">排程類型:</label>
+                                <select id="schedule-type" onchange="updateScheduleForm()">
+                                    <option value="daily">每日</option>
+                                    <option value="weekly">每週</option>
+                                    <option value="hourly">每小時</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="schedule-description">描述:</label>
+                            <textarea id="schedule-description" rows="2" maxlength="500" placeholder="可選的描述..."></textarea>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="schedule-time">執行時間:</label>
+                                <input type="time" id="schedule-time" required>
+                            </div>
+                            <div class="form-group" id="schedule-interval-group" style="display: none;">
+                                <label for="schedule-interval">間隔時間（小時）:</label>
+                                <input type="number" id="schedule-interval" min="1" max="168" placeholder="24">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group" id="schedule-weekdays-group" style="display: none;">
+                            <label>執行日期:</label>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" value="monday"> 週一</label>
+                                <label><input type="checkbox" value="tuesday"> 週二</label>
+                                <label><input type="checkbox" value="wednesday"> 週三</label>
+                                <label><input type="checkbox" value="thursday"> 週四</label>
+                                <label><input type="checkbox" value="friday"> 週五</label>
+                                <label><input type="checkbox" value="saturday"> 週六</label>
+                                <label><input type="checkbox" value="sunday"> 週日</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>報告內容:</label>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" id="include-system" checked> 系統資訊</label>
+                                <label><input type="checkbox" id="include-process" checked> 進程資訊</label>
+                                <label><input type="checkbox" id="include-network" checked> 網路資訊</label>
+                                <label><input type="checkbox" id="include-alerts" checked> 警報資訊</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="schedule-custom-message">自訂訊息前綴:</label>
+                            <textarea id="schedule-custom-message" rows="2" maxlength="1000" placeholder="可選的自訂訊息前綴..."></textarea>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                💾 儲存排程
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="cancelScheduleForm()">
+                                取消
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
