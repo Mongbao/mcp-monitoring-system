@@ -1,12 +1,12 @@
 # 🖥️ MCP 監控系統
 
-[![CI](https://github.com/username/mcp-monitoring-system/workflows/CI/badge.svg)](https://github.com/username/mcp-monitoring-system/actions)
+[![CI](https://github.com/Mongbao/mcp-monitoring-system/workflows/CI/badge.svg)](https://github.com/Mongbao/mcp-monitoring-system/actions)
 [![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![GitHub issues](https://img.shields.io/github/issues/username/mcp-monitoring-system)](https://github.com/username/mcp-monitoring-system/issues)
-[![GitHub stars](https://img.shields.io/github/stars/username/mcp-monitoring-system)](https://github.com/username/mcp-monitoring-system/stargazers)
+[![GitHub issues](https://img.shields.io/github/issues/Mongbao/mcp-monitoring-system)](https://github.com/Mongbao/mcp-monitoring-system/issues)
+[![GitHub stars](https://img.shields.io/github/stars/Mongbao/mcp-monitoring-system)](https://github.com/Mongbao/mcp-monitoring-system/stargazers)
 
-一個基於 Model Context Protocol (MCP) 的先進監控平台，整合了 **系統監控**、**Web 儀表板** 和 **Discord 通知** 功能。
+一個基於 Model Context Protocol (MCP) 的監控平台，整合了 **Web 儀表板** 和 **Discord 通知** 功能。
 
 ## ✨ 主要特色
 
@@ -21,12 +21,10 @@
 ## 📁 專案結構
 
 ```
-mcp_use/
+mcp-monitoring-system/
 ├── README.md                    # 專案說明
 ├── requirements.txt             # Python 依賴套件
-├── mcp_env/                     # Python 虛擬環境
-├── .vscode/
-│   └── mcp.json                 # VS Code MCP 配置
+├── .env.example                 # 環境變數範例
 ├── mcp_servers/                 # MCP 監控 servers
 │   ├── mcp_system_monitor.py    # 系統監控 MCP server
 │   ├── mcp_filesystem_monitor.py # 檔案系統監控
@@ -40,14 +38,17 @@ mcp_use/
 │   ├── start_discord_monitor.sh # Discord 監控啟動腳本
 │   └── test_discord_simple_api.sh # Discord API 測試
 ├── config/                      # 配置檔案
-│   ├── bao-ssl.conf            # Apache 反向代理配置
 │   ├── mcp-web.service         # Web 服務 systemd 配置
 │   └── mcp-discord-monitor.service # Discord 監控服務配置
 ├── scripts/                     # 部署與測試腳本
 │   ├── deploy_apache.sh        # Apache 部署腳本
-│   ├── test_complete_system.sh # 完整系統測試
-│   ├── test_mcp_servers.sh     # MCP servers 測試
-│   └── test_setup.sh           # 設定測試
+│   └── test_mcp_servers.sh     # MCP servers 測試
+├── docs/                        # 文檔
+│   ├── DISCORD_INTEGRATION_COMPLETE.md # Discord 整合指南
+│   ├── DISCORD_SETUP_GUIDE.md  # Discord 設定指南
+│   └── TOKEN_SECURITY_GUIDE.md # 安全設定指南
+└── logs/                        # 日誌檔案
+    └── discord_monitor.log      # Discord 監控日誌
 ├── docs/                        # 文件
 │   ├── DEPLOYMENT_GUIDE.md     # 部署指南
 │   ├── DISCORD_INTEGRATION_COMPLETE.md # Discord 整合完成說明
