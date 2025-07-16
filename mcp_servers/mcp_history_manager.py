@@ -352,20 +352,32 @@ class MCPHistoryManager:
             rows = cursor.fetchall()
             return [dict(zip(columns, row)) for row in rows]
 
-# 全局實例
-history_manager = MCPHistoryManager()
+# 全局實例 (懶加載)
+_history_manager = None
 
 def get_history_manager() -> MCPHistoryManager:
     """獲取歷史管理器實例"""
-    return history_manager
+    global _history_manager
+    if _history_manager is None:
+        try:
+            # 嘗試使用預設路徑
+            _history_manager = MCPHistoryManager()
+        except (PermissionError, OSError) as e:
+            # 如果失敗，使用臨時目錄
+            import tempfile
+            temp_dir = tempfile.mkdtemp()
+            temp_db_path = os.path.join(temp_dir, "mcp_history.db")
+            print(f"警告: 無法創建預設數據庫，使用臨時路徑: {temp_db_path}")
+            _history_manager = MCPHistoryManager(temp_db_path)
+    return _history_manager
 
 def start_history_collection():
     """啟動歷史數據收集"""
-    history_manager.start_collection()
+    get_history_manager().start_collection()
 
 def stop_history_collection():
     """停止歷史數據收集"""
-    history_manager.stop_collection()
+    get_history_manager().stop_collection()
 
 if __name__ == "__main__":
     # 測試運行
