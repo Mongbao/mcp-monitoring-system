@@ -63,8 +63,13 @@ class MCPDiscordMonitor:
         self.channel_id = os.getenv('DISCORD_CHANNEL_ID', '1393483928823660585')
         self.discord_api_base = "https://discord.com/api/v10"
         
+        # 在 CI 環境中允許 dummy token
         if not self.discord_token:
-            raise ValueError("DISCORD_TOKEN 環境變數未設定")
+            if os.getenv('CI') or os.getenv('GITHUB_ACTIONS'):
+                logger.warning("在 CI 環境中運行，DISCORD_TOKEN 未設定")
+                self.discord_token = "dummy_token_for_ci"
+            else:
+                raise ValueError("DISCORD_TOKEN 環境變數未設定")
         
         logger.info("MCP Discord 監控器已初始化")
         logger.info(f"Guild ID: {self.guild_id}")

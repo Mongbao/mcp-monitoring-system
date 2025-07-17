@@ -21,7 +21,18 @@ logger = logging.getLogger(__name__)
 class AlertEngine:
     """智能警報引擎"""
     
-    def __init__(self, data_dir: str = "/home/bao/mcp_use/data"):
+    def __init__(self, data_dir: str = None):
+        # 動態確定數據目錄
+        if data_dir is None:
+            # 尋找項目根目錄
+            current_path = Path(__file__).parent
+            project_root = current_path
+            while project_root.parent != project_root:
+                if (project_root / "data").exists() or (project_root / "app").exists():
+                    break
+                project_root = project_root.parent
+            data_dir = str(project_root / "data")
+        
         self.data_dir = Path(data_dir)
         self.rules_file = self.data_dir / "alert_rules.json"
         self.incidents_file = self.data_dir / "alert_incidents.json"
@@ -34,7 +45,7 @@ class AlertEngine:
         self.rule_states: Dict[str, Dict] = {}  # 規則狀態追蹤
         
         # 確保數據目錄存在
-        self.data_dir.mkdir(exist_ok=True)
+        self.data_dir.mkdir(parents=True, exist_ok=True)
         
         # 載入數據
         self._load_rules()
