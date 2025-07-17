@@ -10,7 +10,7 @@ echo '{}' > data/alert_rules.json
 echo '{}' > data/alert_thresholds.json
 echo '{}' > data/historical_metrics.json
 echo '{}' > data/performance_baselines.json
-echo '[]' > data/schedules.json
+echo '{"schedules": [], "execution_logs": []}' > data/schedules.json
 
 echo "✅ 數據目錄結構已創建"
 
