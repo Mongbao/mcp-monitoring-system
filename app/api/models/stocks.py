@@ -2,7 +2,7 @@
 股票分析資料模型
 """
 from typing import Optional, List, Dict, Any
-from datetime import datetime, date
+from datetime import datetime as dt, date
 from enum import Enum
 from decimal import Decimal
 from pydantic import BaseModel, Field, validator
@@ -80,8 +80,8 @@ class StockBasicInfo(BaseModel):
     website: Optional[str] = Field(None, description="公司網站")
     market_cap: Optional[float] = Field(None, description="市值（億）")
     shares_outstanding: Optional[int] = Field(None, description="已發行股數")
-    created_at: datetime = Field(default_factory=datetime.now)
-    updated_at: datetime = Field(default_factory=datetime.now)
+    created_at: dt = Field(default_factory=dt.now)
+    updated_at: dt = Field(default_factory=dt.now)
     is_active: bool = Field(True, description="是否活躍追蹤")
     tags: List[str] = Field(default_factory=list, description="自定義標籤")
     notes: Optional[str] = Field(None, description="備註")
@@ -95,7 +95,7 @@ class StockPriceData(BaseModel):
     """股價資料"""
     id: str = Field(..., description="價格記錄ID")
     stock_id: str = Field(..., description="股票ID")
-    date: date = Field(..., description="日期")
+    price_date: date = Field(..., description="日期")
     open_price: float = Field(..., description="開盤價")
     high_price: float = Field(..., description="最高價")
     low_price: float = Field(..., description="最低價")
@@ -104,7 +104,7 @@ class StockPriceData(BaseModel):
     turnover: Optional[float] = Field(None, description="成交金額")
     change: Optional[float] = Field(None, description="漲跌")
     change_percent: Optional[float] = Field(None, description="漲跌幅(%)")
-    created_at: datetime = Field(default_factory=datetime.now)
+    created_at: dt = Field(default_factory=dt.now)
 
 
 # === 分析資料模型 ===
@@ -145,7 +145,7 @@ class TechnicalAnalysis(BaseModel):
     
     # 分析師備註
     analysis_note: Optional[str] = Field(None, description="技術分析備註")
-    created_at: datetime = Field(default_factory=datetime.now)
+    created_at: dt = Field(default_factory=dt.now)
 
 
 class FundamentalAnalysis(BaseModel):
@@ -186,7 +186,7 @@ class FundamentalAnalysis(BaseModel):
     
     # 分析備註
     analysis_note: Optional[str] = Field(None, description="基本面分析備註")
-    created_at: datetime = Field(default_factory=datetime.now)
+    created_at: dt = Field(default_factory=dt.now)
 
 
 # === 交易記錄模型 ===
@@ -206,7 +206,7 @@ class Transaction(BaseModel):
     broker: Optional[str] = Field(None, description="券商")
     account: Optional[str] = Field(None, description="帳戶")
     notes: Optional[str] = Field(None, description="交易備註")
-    created_at: datetime = Field(default_factory=datetime.now)
+    created_at: dt = Field(default_factory=dt.now)
 
     @validator('net_amount', pre=True, always=True)
     def calculate_net_amount(cls, v, values):
@@ -230,8 +230,8 @@ class Portfolio(BaseModel):
     realized_pnl: float = Field(0, description="已實現損益")
     total_return: float = Field(0, description="總報酬率(%)")
     risk_level: RiskLevel = Field(..., description="組合風險等級")
-    created_at: datetime = Field(default_factory=datetime.now)
-    updated_at: datetime = Field(default_factory=datetime.now)
+    created_at: dt = Field(default_factory=dt.now)
+    updated_at: dt = Field(default_factory=dt.now)
     is_active: bool = Field(True, description="是否活躍")
 
 
@@ -247,7 +247,7 @@ class PortfolioHolding(BaseModel):
     unrealized_pnl: float = Field(..., description="未實現損益")
     unrealized_pnl_percent: float = Field(..., description="未實現損益率(%)")
     weight: float = Field(..., description="持股權重(%)")
-    last_updated: datetime = Field(default_factory=datetime.now)
+    last_updated: dt = Field(default_factory=dt.now)
 
 
 # === 分析筆記模型 ===
@@ -262,8 +262,8 @@ class AnalysisNote(BaseModel):
     tags: List[str] = Field(default_factory=list, description="標籤")
     attachments: List[str] = Field(default_factory=list, description="附件路徑")
     is_public: bool = Field(False, description="是否公開")
-    created_at: datetime = Field(default_factory=datetime.now)
-    updated_at: datetime = Field(default_factory=datetime.now)
+    created_at: dt = Field(default_factory=dt.now)
+    updated_at: dt = Field(default_factory=dt.now)
 
 
 # === 請求模型 ===
