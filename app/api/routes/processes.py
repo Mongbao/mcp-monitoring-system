@@ -61,3 +61,37 @@ async def get_detailed_processes(
             status_code=500,
             detail=f"獲取詳細進程資訊失敗: {str(e)}"
         )
+
+@router.get("/processes/top", response_model=DataResponse)
+async def get_top_processes(
+    limit: int = Query(10, ge=1, le=50, description="返回進程數量"),
+    sort_by: str = Query("cpu_percent", description="排序欄位")
+):
+    """獲取 CPU 或記憶體使用率最高的進程"""
+    try:
+        import psutil
+        
+        processes = []
+        for proc in psutil.process_iter(['pid', 'name', 'cpu_percent', 'memory_percent', 'status']):
+            try:
+                pinfo = proc.info
+                if pinfo['cpu_percent'] is not None:
+                    processes.append(pinfo)
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                pass
+        
+        # 根據指定欄位排序
+        if sort_by == "memory_percent":
+            processes.sort(key=lambda x: x.get('memory_percent', 0), reverse=True)
+        else:
+            processes.sort(key=lambda x: x.get('cpu_percent', 0), reverse=True)
+        
+        # 返回前 N 個進程
+        top_processes = processes[:limit]
+        
+        return DataResponse(data=top_processes)
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"獲取 top 進程失敗: {str(e)}"
+        )

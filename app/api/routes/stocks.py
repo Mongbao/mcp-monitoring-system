@@ -28,7 +28,49 @@ router = APIRouter()
 
 # 模擬資料儲存（後續會改為檔案或資料庫儲存）
 _stocks_data = {}
-_price_data = {}
+
+@router.get("/overview", response_model=DataResponse)
+async def get_stocks_overview():
+    """獲取股票投資總覽"""
+    try:
+        total_stocks = len(_stocks_data)
+        
+        # 計算總市值和今日漲跌
+        total_value = 0
+        daily_change_sum = 0
+        active_stocks = 0
+        
+        for stock in _stocks_data.values():
+            if stock.get('is_active', True):
+                active_stocks += 1
+                current_price = stock.get('current_price', 0)
+                market_cap = stock.get('market_cap', 0)
+                daily_change = stock.get('daily_change', 0)
+                
+                total_value += market_cap
+                daily_change_sum += daily_change
+        
+        # 計算平均漲跌幅
+        avg_daily_change = daily_change_sum / active_stocks if active_stocks > 0 else 0
+        
+        # 模擬活躍警報數量
+        active_alerts = 0
+        
+        overview_data = {
+            "total_stocks": total_stocks,
+            "active_stocks": active_stocks,
+            "total_value": total_value,
+            "daily_change": avg_daily_change,
+            "active_alerts": active_alerts,
+            "last_updated": datetime.now().isoformat()
+        }
+        
+        return DataResponse(data=overview_data)
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"獲取股票總覽失敗: {str(e)}"
+        )
 
 
 @router.get("/summary", response_model=DataResponse)
