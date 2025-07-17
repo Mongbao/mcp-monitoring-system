@@ -1,0 +1,82 @@
+{
+  "09f9cec5-a58d-4b95-81ea-be63ca34068e": {
+    "id": "09f9cec5-a58d-4b95-81ea-be63ca34068e",
+    "name": "CPU 使用率過高",
+    "description": "CPU 使用率超過 80% 持續 2 分鐘",
+    "category": "performance",
+    "metric": "cpu_percent",
+    "condition": ">",
+    "threshold": 80.0,
+    "level": "warning",
+    "enabled": true,
+    "duration": 120,
+    "cool_down": 300,
+    "auto_resolve": true,
+    "notification_channels": [
+      "discord"
+    ],
+    "tags": {},
+    "created_at": "2025-07-17T14:37:15.676479",
+    "updated_at": "2025-07-17T14:37:15.676502"
+  },
+  "4ea15978-cee4-4ce0-b077-44ffaf986f51": {
+    "id": "4ea15978-cee4-4ce0-b077-44ffaf986f51",
+    "name": "記憶體使用率危險",
+    "description": "記憶體使用率超過 90%",
+    "category": "performance",
+    "metric": "memory_percent",
+    "condition": ">",
+    "threshold": 90.0,
+    "level": "critical",
+    "enabled": true,
+    "duration": 60,
+    "cool_down": 600,
+    "auto_resolve": true,
+    "notification_channels": [
+      "discord"
+    ],
+    "tags": {},
+    "created_at": "2025-07-17T14:37:15.676575",
+    "updated_at": "2025-07-17T14:37:15.676581"
+  },
+  "48809b58-eb77-4fad-9ff0-bc8815427760": {
+    "id": "48809b58-eb77-4fad-9ff0-bc8815427760",
+    "name": "磁碟空間不足",
+    "description": "磁碟使用率超過 85%",
+    "category": "storage",
+    "metric": "disk_percent",
+    "condition": ">",
+    "threshold": 85.0,
+    "level": "warning",
+    "enabled": true,
+    "duration": 300,
+    "cool_down": 1800,
+    "auto_resolve": true,
+    "notification_channels": [
+      "discord"
+    ],
+    "tags": {},
+    "created_at": "2025-07-17T14:37:15.676632",
+    "updated_at": "2025-07-17T14:37:15.676637"
+  },
+  "ef8cfeda-7868-4c0c-95b8-1a5b1d1d0e32": {
+    "id": "ef8cfeda-7868-4c0c-95b8-1a5b1d1d0e32",
+    "name": "系統負載過高",
+    "description": "1分鐘平均負載超過 CPU 核心數",
+    "category": "performance",
+    "metric": "load_avg_1min",
+    "condition": ">",
+    "threshold": 4.0,
+    "level": "warning",
+    "enabled": true,
+    "duration": 180,
+    "cool_down": 300,
+    "auto_resolve": true,
+    "notification_channels": [
+      "discord"
+    ],
+    "tags": {},
+    "created_at": "2025-07-17T14:37:15.676715",
+    "updated_at": "2025-07-17T14:37:15.676720"
+  }
+}

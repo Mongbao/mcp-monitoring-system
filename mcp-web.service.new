@@ -1,0 +1,16 @@
+[Unit]
+Description=MCP Monitoring System Web Server
+After=network.target
+
+[Service]
+User=bao
+Group=bao
+WorkingDirectory=/home/bao/mcp_use
+Environment="PYTHONPATH=/home/bao/mcp_use"
+ExecStartPre=/usr/bin/fuser -k 8003/tcp -s
+ExecStart=/home/bao/mcp_use/mcp_env/bin/python -m uvicorn app.main:app --host 0.0.0.0 --port 8003
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

@@ -1,10 +1,18 @@
 {
-  "cpu_warning": 70,
-  "cpu_critical": 85,
-  "memory_warning": 80,
-  "memory_critical": 90,
-  "disk_warning": 85,
-  "disk_critical": 95,
-  "load_warning": 2.0,
-  "load_critical": 4.0
+  "cpu": {
+    "warning": 70.0,
+    "critical": 85.0
+  },
+  "memory": {
+    "warning": 70.0,
+    "critical": 80.0
+  },
+  "disk": {
+    "warning": 85.0,
+    "critical": 95.0
+  },
+  "load": {
+    "warning": 2.0,
+    "critical": 4.0
+  }
 }

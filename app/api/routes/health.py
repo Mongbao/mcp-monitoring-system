@@ -47,9 +47,40 @@ def get_health_monitor():
                 'current_alerts': []
             }
             
-        def get_trends(self):
+        def get_trends(self, type='health', hours=24):
+            """生成模擬的趨勢數據"""
+            import datetime
+            from random import uniform
+            
+            trends = []
+            current_time = datetime.datetime.now()
+            
+            # 生成過去指定小時數的趨勢數據
+            for i in range(min(hours, 24)):  # 最多24個數據點
+                timestamp = current_time - datetime.timedelta(hours=i)
+                
+                # 根據類型生成不同的模擬數據
+                if type == 'health':
+                    trends.append({
+                        'timestamp': timestamp.isoformat(),
+                        'overall_score': round(uniform(80, 95), 1),
+                        'cpu_score': round(uniform(75, 90), 1),
+                        'memory_score': round(uniform(85, 95), 1),
+                        'disk_score': round(uniform(80, 90), 1),
+                        'process_score': round(uniform(85, 95), 1)
+                    })
+                else:
+                    # 其他類型的基本數據
+                    trends.append({
+                        'timestamp': timestamp.isoformat(),
+                        'value': round(uniform(50, 100), 1)
+                    })
+            
+            # 按時間順序排列（最新的在前）
+            trends.reverse()
+            
             return {
-                'trends': []
+                'trends': trends
             }
     
     return MockHealthMonitor()

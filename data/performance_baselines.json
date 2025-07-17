@@ -1,0 +1,42 @@
+{
+  "cpu_percent": {
+    "metric_name": "cpu_percent",
+    "baseline_average": 14.704166666666667,
+    "baseline_std": 9.803924643008896,
+    "upper_threshold": 34.31201595268446,
+    "lower_threshold": 0.0,
+    "confidence_level": 0.95,
+    "sample_count": 24,
+    "last_updated": "2025-07-17T14:50:49.118128"
+  },
+  "memory_percent": {
+    "metric_name": "memory_percent",
+    "baseline_average": 46.983333333333334,
+    "baseline_std": 0.8244453559378789,
+    "upper_threshold": 48.63222404520909,
+    "lower_threshold": 45.334442621457576,
+    "confidence_level": 0.95,
+    "sample_count": 24,
+    "last_updated": "2025-07-17T14:50:49.118128"
+  },
+  "disk_percent": {
+    "metric_name": "disk_percent",
+    "baseline_average": 68.5903706264855,
+    "baseline_std": 0.07026635947077407,
+    "upper_threshold": 68.73090334542704,
+    "lower_threshold": 68.44983790754395,
+    "confidence_level": 0.95,
+    "sample_count": 24,
+    "last_updated": "2025-07-17T14:50:49.118128"
+  },
+  "load_avg_1min": {
+    "metric_name": "load_avg_1min",
+    "baseline_average": 0.680419921875,
+    "baseline_std": 0.15728068212246926,
+    "upper_threshold": 0.9949812861199385,
+    "lower_threshold": 0.3658585576300615,
+    "confidence_level": 0.95,
+    "sample_count": 24,
+    "last_updated": "2025-07-17T14:50:49.118128"
+  }
+}
