@@ -62,7 +62,20 @@ app.include_router(stocks.router, prefix="/api/stocks", tags=["股票分析管�
 @app.get("/", response_class=HTMLResponse)
 async def dashboard(request: Request):
     """主監控儀表板"""
-    return templates.TemplateResponse("dashboard.html", {"request": request})
+    return templates.TemplateResponse("dashboard_content.html", {
+        "request": request,
+        "title": "系統監控",
+        "page_title": "系統總覽"
+    })
+
+@app.get("/stocks", response_class=HTMLResponse)
+async def stocks_page(request: Request):
+    """股票分析頁面"""
+    return templates.TemplateResponse("stocks_content.html", {
+        "request": request,
+        "title": "股票分析",
+        "page_title": "股票投資分析"
+    })
 
 @app.get("/health")
 async def health_check():

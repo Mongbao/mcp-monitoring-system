@@ -1,0 +1,800 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <!-- 股票總覽指標 -->
+    <div class="stock-overview">
+        <div class="overview-card">
+            <div class="overview-icon">📈</div>
+            <div class="overview-info">
+                <div class="overview-value" id="totalStocks">-</div>
+                <div class="overview-label">追蹤股票</div>
+            </div>
+        </div>
+        <div class="overview-card">
+            <div class="overview-icon">💰</div>
+            <div class="overview-info">
+                <div class="overview-value" id="totalValue">-</div>
+                <div class="overview-label">總市值</div>
+            </div>
+        </div>
+        <div class="overview-card">
+            <div class="overview-icon">📊</div>
+            <div class="overview-info">
+                <div class="overview-value" id="dailyChange">-</div>
+                <div class="overview-label">今日漲跌</div>
+            </div>
+        </div>
+        <div class="overview-card">
+            <div class="overview-icon">⚡</div>
+            <div class="overview-info">
+                <div class="overview-value" id="activeAlerts">-</div>
+                <div class="overview-label">活躍警報</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 功能按鈕區 -->
+    <div class="action-bar">
+        <button class="btn-primary" onclick="showAddStockModal()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+            </svg>
+            新增股票
+        </button>
+        <button class="btn-secondary" onclick="refreshAllData()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+            </svg>
+            刷新數據
+        </button>
+        <button class="btn-secondary" onclick="exportData()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+            </svg>
+            匯出資料
+        </button>
+        <div class="search-container">
+            <input type="text" id="stockSearch" placeholder="搜尋股票代號或名稱..." class="search-input">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+            </svg>
+        </div>
+    </div>
+
+    <!-- 股票列表 -->
+    <div class="stock-list-container">
+        <div class="list-header">
+            <h3>股票監控列表</h3>
+            <div class="list-controls">
+                <select id="sortBy" class="sort-select">
+                    <option value="symbol">代號</option>
+                    <option value="name">名稱</option>
+                    <option value="price">價格</option>
+                    <option value="change_percent">漲跌幅</option>
+                    <option value="market_cap">市值</option>
+                </select>
+                <button class="btn-icon" onclick="toggleSortOrder()">
+                    <svg id="sortIcon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7 14l5-5 5 5z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <div class="stock-grid" id="stockList">
+            <div class="loading-placeholder">
+                <div class="loading-spinner"></div>
+                <p>載入股票資料中...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 股票詳情模態框 -->
+    <div class="modal" id="stockDetailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalStockTitle">股票詳情</h3>
+                <button class="modal-close" onclick="closeModal('stockDetailModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="modalStockContent">
+                <!-- 股票詳情內容 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增股票模態框 -->
+    <div class="modal" id="addStockModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>新增股票</h3>
+                <button class="modal-close" onclick="closeModal('addStockModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addStockForm">
+                    <div class="form-group">
+                        <label for="stockSymbol">股票代號</label>
+                        <input type="text" id="stockSymbol" name="symbol" required placeholder="例如: 2330">
+                    </div>
+                    <div class="form-group">
+                        <label for="stockName">股票名稱</label>
+                        <input type="text" id="stockName" name="name" required placeholder="例如: 台積電">
+                    </div>
+                    <div class="form-group">
+                        <label for="stockMarket">市場</label>
+                        <select id="stockMarket" name="market" required>
+                            <option value="">選擇市場</option>
+                            <option value="TSE">台灣證券交易所</option>
+                            <option value="OTC">櫃買中心</option>
+                            <option value="NYSE">紐約證券交易所</option>
+                            <option value="NASDAQ">納斯達克</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="stockTags">標籤 (可選)</label>
+                        <input type="text" id="stockTags" name="tags" placeholder="以逗號分隔，例如: 半導體,科技">
+                    </div>
+                    <div class="form-group">
+                        <label for="stockNotes">備註 (可選)</label>
+                        <textarea id="stockNotes" name="notes" rows="3" placeholder="股票相關備註..."></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="closeModal('addStockModal')">取消</button>
+                        <button type="submit" class="btn-primary">新增股票</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* 股票頁面專用樣式 */
+        .stock-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .overview-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .overview-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--shadow-hover);
+        }
+
+        .overview-icon {
+            font-size: 2.5rem;
+            opacity: 0.8;
+        }
+
+        .overview-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 0.25rem;
+        }
+
+        .overview-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .action-bar {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary, .btn-secondary {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--sidebar-hover);
+        }
+
+        .btn-icon {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 0.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-icon:hover {
+            background: var(--sidebar-hover);
+            border-color: var(--accent-color);
+        }
+
+        .search-container {
+            position: relative;
+            margin-left: auto;
+        }
+
+        .search-input {
+            padding: 0.75rem 3rem 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 0.9rem;
+            width: 300px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+
+        .stock-list-container {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px var(--shadow);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .list-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .list-header h3 {
+            margin: 0;
+            color: var(--text-color);
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .list-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sort-select {
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        .stock-grid {
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stock-card {
+            background: var(--metric-bg);
+            border: 1px solid var(--metric-border);
+            border-radius: 10px;
+            padding: 1.25rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .stock-card:hover {
+            background: var(--metric-hover);
+            border-color: var(--metric-border-hover);
+            transform: translateY(-2px);
+        }
+
+        .stock-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .stock-symbol {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        .stock-name {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-top: 0.25rem;
+        }
+
+        .stock-price {
+            text-align: right;
+        }
+
+        .current-price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .price-change {
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-top: 0.25rem;
+        }
+
+        .price-change.positive {
+            color: var(--success-color);
+        }
+
+        .price-change.negative {
+            color: var(--danger-color);
+        }
+
+        .stock-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        /* 模態框樣式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 50px var(--shadow-hover);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-light);
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        .loading-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: var(--text-light);
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .action-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-container {
+                margin-left: 0;
+            }
+
+            .search-input {
+                width: 100%;
+            }
+
+            .stock-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <script>
+        // 股票頁面 JavaScript 功能
+        let stockData = [];
+        let filteredStocks = [];
+        let sortOrder = 'asc';
+
+        // 初始化頁面
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeStocksPage();
+            setupEventListeners();
+        });
+
+        async function initializeStocksPage() {
+            try {
+                await Promise.all([
+                    loadStockOverview(),
+                    loadStockList()
+                ]);
+            } catch (error) {
+                console.error('初始化股票頁面失敗:', error);
+            }
+        }
+
+        function setupEventListeners() {
+            // 搜尋功能
+            document.getElementById('stockSearch').addEventListener('input', function(e) {
+                filterStocks(e.target.value);
+            });
+
+            // 排序功能
+            document.getElementById('sortBy').addEventListener('change', function(e) {
+                sortStocks(e.target.value);
+            });
+
+            // 新增股票表單
+            document.getElementById('addStockForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addNewStock();
+            });
+
+            // 點擊模態框外部關閉
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('modal')) {
+                    e.target.style.display = 'none';
+                }
+            });
+        }
+
+        async function loadStockOverview() {
+            try {
+                const response = await fetch('/api/stocks/overview');
+                const data = await response.json();
+                
+                document.getElementById('totalStocks').textContent = data.data.total_stocks || '0';
+                document.getElementById('totalValue').textContent = 
+                    data.data.total_value ? `$${data.data.total_value.toLocaleString()}` : '-';
+                
+                const dailyChange = data.data.daily_change || 0;
+                const changeElement = document.getElementById('dailyChange');
+                changeElement.textContent = `${dailyChange >= 0 ? '+' : ''}${dailyChange.toFixed(2)}%`;
+                changeElement.style.color = dailyChange >= 0 ? 'var(--success-color)' : 'var(--danger-color)';
+                
+                document.getElementById('activeAlerts').textContent = data.data.active_alerts || '0';
+            } catch (error) {
+                console.error('載入股票總覽失敗:', error);
+            }
+        }
+
+        async function loadStockList() {
+            try {
+                const response = await fetch('/api/stocks');
+                const data = await response.json();
+                
+                stockData = data.data || [];
+                filteredStocks = [...stockData];
+                renderStockList();
+            } catch (error) {
+                console.error('載入股票列表失敗:', error);
+                document.getElementById('stockList').innerHTML = `
+                    <div class="error-message">
+                        <p>載入股票資料失敗，請稍後再試。</p>
+                        <button class="btn-primary" onclick="loadStockList()">重新載入</button>
+                    </div>
+                `;
+            }
+        }
+
+        function renderStockList() {
+            const container = document.getElementById('stockList');
+            
+            if (filteredStocks.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p>沒有找到股票資料</p>
+                        <button class="btn-primary" onclick="showAddStockModal()">新增第一支股票</button>
+                    </div>
+                `;
+                return;
+            }
+
+            const stocksHtml = filteredStocks.map(stock => {
+                const change = stock.daily_change || 0;
+                const changeClass = change >= 0 ? 'positive' : 'negative';
+                const changeSymbol = change >= 0 ? '+' : '';
+                
+                return `
+                    <div class="stock-card" onclick="showStockDetail('${stock.id}')">
+                        <div class="stock-header">
+                            <div>
+                                <div class="stock-symbol">${stock.symbol}</div>
+                                <div class="stock-name">${stock.name}</div>
+                            </div>
+                            <div class="stock-price">
+                                <div class="current-price">$${stock.current_price?.toFixed(2) || 'N/A'}</div>
+                                <div class="price-change ${changeClass}">
+                                    ${changeSymbol}${change.toFixed(2)}%
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stock-info">
+                            <span>市場: ${stock.market}</span>
+                            <span>市值: ${stock.market_cap ? '$' + stock.market_cap.toLocaleString() : 'N/A'}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = stocksHtml;
+        }
+
+        function filterStocks(searchTerm) {
+            if (!searchTerm) {
+                filteredStocks = [...stockData];
+            } else {
+                const term = searchTerm.toLowerCase();
+                filteredStocks = stockData.filter(stock => 
+                    stock.symbol.toLowerCase().includes(term) ||
+                    stock.name.toLowerCase().includes(term)
+                );
+            }
+            renderStockList();
+        }
+
+        function sortStocks(sortBy) {
+            filteredStocks.sort((a, b) => {
+                let aVal = a[sortBy];
+                let bVal = b[sortBy];
+                
+                if (typeof aVal === 'string') {
+                    aVal = aVal.toLowerCase();
+                    bVal = bVal.toLowerCase();
+                }
+                
+                if (sortOrder === 'asc') {
+                    return aVal > bVal ? 1 : -1;
+                } else {
+                    return aVal < bVal ? 1 : -1;
+                }
+            });
+            
+            renderStockList();
+        }
+
+        function toggleSortOrder() {
+            sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+            const icon = document.getElementById('sortIcon');
+            icon.innerHTML = sortOrder === 'asc' ? 
+                '<path d="M7 14l5-5 5 5z"/>' : 
+                '<path d="M7 10l5 5 5-5z"/>';
+            
+            const currentSort = document.getElementById('sortBy').value;
+            if (currentSort) {
+                sortStocks(currentSort);
+            }
+        }
+
+        async function showStockDetail(stockId) {
+            try {
+                const response = await fetch(`/api/stocks/${stockId}/detail`);
+                const data = await response.json();
+                
+                document.getElementById('modalStockTitle').textContent = 
+                    `${data.data.symbol} - ${data.data.name}`;
+                
+                document.getElementById('modalStockContent').innerHTML = `
+                    <div class="stock-detail-content">
+                        <div class="detail-section">
+                            <h4>基本資訊</h4>
+                            <p><strong>代號:</strong> ${data.data.symbol}</p>
+                            <p><strong>名稱:</strong> ${data.data.name}</p>
+                            <p><strong>市場:</strong> ${data.data.market}</p>
+                            <p><strong>當前價格:</strong> $${data.data.current_price?.toFixed(2) || 'N/A'}</p>
+                        </div>
+                        <div class="detail-section">
+                            <h4>價格資訊</h4>
+                            <p><strong>今日漲跌:</strong> ${data.data.daily_change?.toFixed(2) || 'N/A'}%</p>
+                            <p><strong>52週最高:</strong> $${data.data.week_52_high?.toFixed(2) || 'N/A'}</p>
+                            <p><strong>52週最低:</strong> $${data.data.week_52_low?.toFixed(2) || 'N/A'}</p>
+                        </div>
+                        ${data.data.notes ? `
+                        <div class="detail-section">
+                            <h4>備註</h4>
+                            <p>${data.data.notes}</p>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+                
+                showModal('stockDetailModal');
+            } catch (error) {
+                console.error('載入股票詳情失敗:', error);
+            }
+        }
+
+        async function addNewStock() {
+            const form = document.getElementById('addStockForm');
+            const formData = new FormData(form);
+            
+            const stockData = {
+                symbol: formData.get('symbol').toUpperCase(),
+                name: formData.get('name'),
+                market: formData.get('market'),
+                tags: formData.get('tags') ? formData.get('tags').split(',').map(tag => tag.trim()) : [],
+                notes: formData.get('notes') || null
+            };
+
+            try {
+                const response = await fetch('/api/stocks', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(stockData)
+                });
+
+                if (response.ok) {
+                    closeModal('addStockModal');
+                    form.reset();
+                    await loadStockList();
+                    await loadStockOverview();
+                } else {
+                    const error = await response.json();
+                    alert('新增股票失敗: ' + error.detail);
+                }
+            } catch (error) {
+                console.error('新增股票失敗:', error);
+                alert('新增股票失敗，請稍後再試');
+            }
+        }
+
+        function showAddStockModal() {
+            showModal('addStockModal');
+        }
+
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        async function refreshAllData() {
+            await Promise.all([
+                loadStockOverview(),
+                loadStockList()
+            ]);
+        }
+
+        function exportData() {
+            // 實現數據匯出功能
+            console.log('匯出股票資料');
+        }
+    </script>
+{% endblock %}

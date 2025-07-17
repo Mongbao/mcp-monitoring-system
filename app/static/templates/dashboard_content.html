@@ -1,0 +1,524 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <!-- 快速狀態指標 -->
+    <div class="metrics-grid" id="quickMetrics">
+        <!-- 載入動畫，JavaScript 將在此處插入內容 -->
+        <div class="loading-placeholder">
+            <div class="loading-spinner"></div>
+            <p>載入系統指標中...</p>
+        </div>
+    </div>
+
+    <!-- 系統資訊卡片 -->
+    <div class="cards-grid">
+        <!-- CPU 使用率 -->
+        <div class="info-card">
+            <div class="card-header">
+                <h3>CPU 使用率</h3>
+                <div class="card-actions">
+                    <button class="btn-icon" onclick="refreshCpuChart()">🔄</button>
+                </div>
+            </div>
+            <div class="card-content">
+                <canvas id="cpuChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- 記憶體使用率 -->
+        <div class="info-card">
+            <div class="card-header">
+                <h3>記憶體使用率</h3>
+                <div class="card-actions">
+                    <button class="btn-icon" onclick="refreshMemoryChart()">🔄</button>
+                </div>
+            </div>
+            <div class="card-content">
+                <canvas id="memoryChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- 磁碟使用率 -->
+        <div class="info-card">
+            <div class="card-header">
+                <h3>磁碟使用率</h3>
+                <div class="card-actions">
+                    <button class="btn-icon" onclick="refreshDiskChart()">🔄</button>
+                </div>
+            </div>
+            <div class="card-content">
+                <canvas id="diskChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- 網路活動 -->
+        <div class="info-card">
+            <div class="card-header">
+                <h3>網路活動</h3>
+                <div class="card-actions">
+                    <button class="btn-icon" onclick="refreshNetworkChart()">🔄</button>
+                </div>
+            </div>
+            <div class="card-content">
+                <canvas id="networkChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- 詳細資訊區域 -->
+    <div class="details-section">
+        <!-- 服務狀態 -->
+        <div class="info-card full-width">
+            <div class="card-header">
+                <h3>系統服務狀態</h3>
+                <div class="card-actions">
+                    <button class="btn-icon" onclick="refreshServices()">🔄</button>
+                    <button class="btn-secondary" onclick="showServiceDetails()">詳細資訊</button>
+                </div>
+            </div>
+            <div class="card-content">
+                <div id="servicesTable" class="data-table-container">
+                    <div class="loading-placeholder">
+                        <div class="loading-spinner"></div>
+                        <p>載入服務狀態中...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 進程監控 -->
+        <div class="info-card full-width">
+            <div class="card-header">
+                <h3>系統進程</h3>
+                <div class="card-actions">
+                    <button class="btn-icon" onclick="refreshProcesses()">🔄</button>
+                    <button class="btn-secondary" onclick="showProcessDetails()">詳細資訊</button>
+                </div>
+            </div>
+            <div class="card-content">
+                <div id="processesTable" class="data-table-container">
+                    <div class="loading-placeholder">
+                        <div class="loading-spinner"></div>
+                        <p>載入進程資訊中...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* 系統監控特定樣式 */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .details-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .info-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px var(--shadow);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--shadow-hover);
+        }
+
+        .info-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            color: var(--text-color);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .btn-icon, .btn-secondary {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-icon {
+            padding: 0.5rem;
+            border-radius: 50%;
+        }
+
+        .btn-secondary {
+            background: var(--text-light);
+        }
+
+        .btn-icon:hover, .btn-secondary:hover {
+            background: var(--accent-hover);
+            transform: scale(1.05);
+        }
+
+        .loading-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: var(--text-light);
+        }
+
+        .loading-spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .data-table-container {
+            overflow-x: auto;
+        }
+
+        /* 響應式調整 */
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <script>
+        // 系統監控 JavaScript 功能
+        let charts = {};
+        let refreshInterval;
+
+        // 初始化頁面
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDashboard();
+            startAutoRefresh();
+        });
+
+        async function initializeDashboard() {
+            try {
+                await Promise.all([
+                    loadQuickMetrics(),
+                    loadServices(),
+                    loadProcesses(),
+                    initializeCharts()
+                ]);
+            } catch (error) {
+                console.error('初始化儀表板失敗:', error);
+            }
+        }
+
+        async function loadQuickMetrics() {
+            try {
+                const response = await fetch('/api/system/quick-status');
+                const data = await response.json();
+                
+                const metricsHtml = `
+                    <div class="metric-card">
+                        <div class="metric-icon">💻</div>
+                        <div class="metric-info">
+                            <div class="metric-value">${data.cpu_percent.toFixed(1)}%</div>
+                            <div class="metric-label">CPU 使用率</div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">🧠</div>
+                        <div class="metric-info">
+                            <div class="metric-value">${data.memory_percent.toFixed(1)}%</div>
+                            <div class="metric-label">記憶體使用率</div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">💾</div>
+                        <div class="metric-info">
+                            <div class="metric-value">${data.disk_percent.toFixed(1)}%</div>
+                            <div class="metric-label">磁碟使用率</div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">⚡</div>
+                        <div class="metric-info">
+                            <div class="metric-value">${data.load_avg.toFixed(2)}</div>
+                            <div class="metric-label">系統負載</div>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('quickMetrics').innerHTML = metricsHtml;
+            } catch (error) {
+                console.error('載入快速指標失敗:', error);
+            }
+        }
+
+        async function loadServices() {
+            try {
+                const response = await fetch('/api/services/paginated?page=1&size=10');
+                const data = await response.json();
+                
+                let servicesHtml = `
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>服務名稱</th>
+                                <th>狀態</th>
+                                <th>CPU</th>
+                                <th>記憶體</th>
+                                <th>最後更新</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                data.data.items.forEach(service => {
+                    const statusClass = service.status === 'running' ? 'status-success' : 
+                                       service.status === 'stopped' ? 'status-danger' : 'status-warning';
+                    
+                    servicesHtml += `
+                        <tr>
+                            <td>${service.name}</td>
+                            <td><span class="status-badge ${statusClass}">${service.status}</span></td>
+                            <td>${service.cpu_percent?.toFixed(1) || 'N/A'}%</td>
+                            <td>${service.memory_percent?.toFixed(1) || 'N/A'}%</td>
+                            <td>${new Date(service.last_updated).toLocaleString()}</td>
+                        </tr>
+                    `;
+                });
+                
+                servicesHtml += '</tbody></table>';
+                document.getElementById('servicesTable').innerHTML = servicesHtml;
+            } catch (error) {
+                console.error('載入服務狀態失敗:', error);
+            }
+        }
+
+        async function loadProcesses() {
+            try {
+                const response = await fetch('/api/processes/top?limit=10');
+                const data = await response.json();
+                
+                let processesHtml = `
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>PID</th>
+                                <th>進程名稱</th>
+                                <th>CPU</th>
+                                <th>記憶體</th>
+                                <th>狀態</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                data.data.forEach(process => {
+                    processesHtml += `
+                        <tr>
+                            <td>${process.pid}</td>
+                            <td>${process.name}</td>
+                            <td>${process.cpu_percent.toFixed(1)}%</td>
+                            <td>${process.memory_percent.toFixed(1)}%</td>
+                            <td><span class="status-badge status-success">${process.status}</span></td>
+                        </tr>
+                    `;
+                });
+                
+                processesHtml += '</tbody></table>';
+                document.getElementById('processesTable').innerHTML = processesHtml;
+            } catch (error) {
+                console.error('載入進程資訊失敗:', error);
+            }
+        }
+
+        function initializeCharts() {
+            // 這裡可以初始化圖表
+            // 暫時顯示占位符
+            ['cpuChart', 'memoryChart', 'diskChart', 'networkChart'].forEach(id => {
+                const canvas = document.getElementById(id);
+                if (canvas) {
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = 'var(--text-light)';
+                    ctx.font = '16px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('圖表載入中...', canvas.width/2, canvas.height/2);
+                }
+            });
+        }
+
+        function startAutoRefresh() {
+            refreshInterval = setInterval(() => {
+                loadQuickMetrics();
+                loadServices();
+                loadProcesses();
+            }, 30000); // 每30秒更新一次
+        }
+
+        // 刷新功能
+        function refreshCpuChart() {
+            console.log('刷新 CPU 圖表');
+        }
+
+        function refreshMemoryChart() {
+            console.log('刷新記憶體圖表');
+        }
+
+        function refreshDiskChart() {
+            console.log('刷新磁碟圖表');
+        }
+
+        function refreshNetworkChart() {
+            console.log('刷新網路圖表');
+        }
+
+        function refreshServices() {
+            loadServices();
+        }
+
+        function refreshProcesses() {
+            loadProcesses();
+        }
+
+        function showServiceDetails() {
+            window.open('/api/services', '_blank');
+        }
+
+        function showProcessDetails() {
+            window.open('/api/processes', '_blank');
+        }
+    </script>
+
+    <style>
+        /* 數據表格樣式 */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table th {
+            background: var(--metric-bg);
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .data-table tr:hover {
+            background: var(--metric-hover);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-success {
+            background: rgba(39, 174, 96, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-warning {
+            background: rgba(243, 156, 18, 0.1);
+            color: var(--warning-color);
+        }
+
+        .status-danger {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--danger-color);
+        }
+
+        /* 快速指標卡片樣式 */
+        .metric-card {
+            background: var(--metric-bg);
+            border: 1px solid var(--metric-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            background: var(--metric-hover);
+            border-color: var(--metric-border-hover);
+            transform: translateY(-2px);
+        }
+
+        .metric-icon {
+            font-size: 2rem;
+            opacity: 0.8;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+    </style>
+{% endblock %}
