@@ -9,9 +9,17 @@ from datetime import datetime, timedelta
 from collections import defaultdict
 import statistics
 import logging
+from pathlib import Path
 
+# 動態添加項目根目錄到 Python 路徑
 import sys
-sys.path.insert(0, '/home/bao/mcp_use')
+current_path = Path(__file__).parent
+project_root = current_path
+while project_root.parent != project_root:
+    if (project_root / "app").exists():
+        break
+    project_root = project_root.parent
+sys.path.insert(0, str(project_root))
 
 from app.api.models.dependencies import (
     ResourceDependency, ResourceImpactAnalysis, ResourceBottleneck,

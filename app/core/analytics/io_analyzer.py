@@ -11,7 +11,15 @@ import statistics
 import logging
 
 import sys
-sys.path.insert(0, '/home/bao/mcp_use')
+# 動態添加項目根目錄到 Python 路徑
+from pathlib import Path
+current_path = Path(__file__).parent
+project_root = current_path
+while project_root.parent != project_root:
+    if (project_root / "app").exists():
+        break
+    project_root = project_root.parent
+sys.path.insert(0, str(project_root))
 
 from app.api.models.io_analysis import (
     DiskIOStats, NetworkIOStats, ProcessIOStats, IOPerformanceMetrics,

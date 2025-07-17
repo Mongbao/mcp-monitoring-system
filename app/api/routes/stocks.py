@@ -3,11 +3,20 @@
 """
 import sys
 from typing import Optional, List
-from fastapi import APIRouter, HTTPException, Depends, Query, Path
+from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import Path as FastAPIPath
 from datetime import datetime, date
 
 # 添加 MCP 模組路徑
-sys.path.insert(0, '/home/bao/mcp_use')
+# 動態添加項目根目錄到 Python 路徑
+from pathlib import Path
+current_path = Path(__file__).parent
+project_root = current_path
+while project_root.parent != project_root:
+    if (project_root / "app").exists():
+        break
+    project_root = project_root.parent
+sys.path.insert(0, str(project_root))
 
 from app.api.models.response import DataResponse, PaginatedResponse
 from app.api.models.stocks import (
@@ -148,7 +157,7 @@ async def get_stocks_list(
 
 
 @router.get("/{stock_id}", response_model=DataResponse)
-async def get_stock_detail(stock_id: str = Path(..., description="股票ID")):
+async def get_stock_detail(stock_id: str = FastAPIPath(..., description="股票ID")):
     """獲取股票詳細資料"""
     try:
         if stock_id not in _stocks_data:
@@ -209,7 +218,7 @@ async def create_stock(stock_data: StockCreate):
 
 @router.put("/{stock_id}", response_model=DataResponse)
 async def update_stock(
-    stock_id: str = Path(..., description="股票ID"),
+    stock_id: str = FastAPIPath(..., description="股票ID"),
     stock_update: StockUpdate = ...
 ):
     """更新股票資料"""
@@ -239,7 +248,7 @@ async def update_stock(
 
 
 @router.delete("/{stock_id}", response_model=DataResponse)
-async def delete_stock(stock_id: str = Path(..., description="股票ID")):
+async def delete_stock(stock_id: str = FastAPIPath(..., description="股票ID")):
     """刪除股票"""
     try:
         if stock_id not in _stocks_data:
@@ -260,7 +269,7 @@ async def delete_stock(stock_id: str = Path(..., description="股票ID")):
 
 
 @router.post("/{stock_id}/toggle", response_model=DataResponse)
-async def toggle_stock_active(stock_id: str = Path(..., description="股票ID")):
+async def toggle_stock_active(stock_id: str = FastAPIPath(..., description="股票ID")):
     """切換股票追蹤狀態"""
     try:
         if stock_id not in _stocks_data:
@@ -286,7 +295,7 @@ async def toggle_stock_active(stock_id: str = Path(..., description="股票ID"))
 
 @router.get("/{stock_id}/price", response_model=DataResponse)
 async def get_stock_price_history(
-    stock_id: str = Path(..., description="股票ID"),
+    stock_id: str = FastAPIPath(..., description="股票ID"),
     start_date: Optional[date] = Query(None, description="開始日期"),
     end_date: Optional[date] = Query(None, description="結束日期"),
     limit: int = Query(100, ge=1, le=1000, description="返回數量限制")

@@ -3,10 +3,19 @@
 """
 import sys
 from typing import Optional, List
-from fastapi import APIRouter, HTTPException, Depends, Query, Path
+from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import Path as FastAPIPath
 
 # 添加 MCP 模組路徑
-sys.path.insert(0, '/home/bao/mcp_use')
+# 動態添加項目根目錄到 Python 路徑
+from pathlib import Path
+current_path = Path(__file__).parent
+project_root = current_path
+while project_root.parent != project_root:
+    if (project_root / "app").exists():
+        break
+    project_root = project_root.parent
+sys.path.insert(0, str(project_root))
 
 from app.api.models.response import DataResponse
 from app.api.models.alerts import (
@@ -84,7 +93,7 @@ async def get_incidents(
 
 
 @router.get("/incidents/{incident_id}", response_model=DataResponse)
-async def get_incident(incident_id: str = Path(..., description="事件ID")):
+async def get_incident(incident_id: str = FastAPIPath(..., description="事件ID")):
     """獲取特定警報事件詳情"""
     try:
         if incident_id not in alert_engine.incidents:
@@ -111,7 +120,7 @@ async def get_incident(incident_id: str = Path(..., description="事件ID")):
 
 @router.post("/incidents/{incident_id}/action", response_model=DataResponse)
 async def incident_action(
-    incident_id: str = Path(..., description="事件ID"),
+    incident_id: str = FastAPIPath(..., description="事件ID"),
     action: AlertIncidentAction = ...
 ):
     """對警報事件執行操作"""
@@ -180,7 +189,7 @@ async def get_alert_rules():
 
 
 @router.get("/rules/{rule_id}", response_model=DataResponse)
-async def get_alert_rule(rule_id: str = Path(..., description="規則ID")):
+async def get_alert_rule(rule_id: str = FastAPIPath(..., description="規則ID")):
     """獲取特定警報規則"""
     try:
         if rule_id not in alert_engine.rules:
@@ -231,7 +240,7 @@ async def create_alert_rule(rule_data: AlertRuleCreate):
 
 @router.put("/rules/{rule_id}", response_model=DataResponse)
 async def update_alert_rule(
-    rule_id: str = Path(..., description="規則ID"),
+    rule_id: str = FastAPIPath(..., description="規則ID"),
     rule_update: AlertRuleUpdate = ...
 ):
     """更新警報規則"""
@@ -264,7 +273,7 @@ async def update_alert_rule(
 
 
 @router.delete("/rules/{rule_id}", response_model=DataResponse)
-async def delete_alert_rule(rule_id: str = Path(..., description="規則ID")):
+async def delete_alert_rule(rule_id: str = FastAPIPath(..., description="規則ID")):
     """刪除警報規則"""
     try:
         if rule_id not in alert_engine.rules:
@@ -286,7 +295,7 @@ async def delete_alert_rule(rule_id: str = Path(..., description="規則ID")):
 
 
 @router.post("/rules/{rule_id}/toggle", response_model=DataResponse)
-async def toggle_alert_rule(rule_id: str = Path(..., description="規則ID")):
+async def toggle_alert_rule(rule_id: str = FastAPIPath(..., description="規則ID")):
     """切換警報規則啟用狀態"""
     try:
         if rule_id not in alert_engine.rules:
